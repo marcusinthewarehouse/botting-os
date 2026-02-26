@@ -19,7 +19,7 @@ const Accounts: React.FC = () => {
   const deadCount = store.accounts.filter(a => a.status === 'dead').length;
   const flaggedCount = store.accounts.filter(a => a.restrictions === 'flagged').length;
   const avgHealth = (store.accounts.reduce((a, b) => a + b.healthScore, 0) / store.accounts.length).toFixed(0);
-  const stores = [...new Set(store.accounts.map(a => a.store))];
+  const stores = Array.from(new Set(store.accounts.map(a => a.store)));
 
   return (
     <div className="flex-1 overflow-auto bg-gradient-to-br from-slate-900 to-slate-800">

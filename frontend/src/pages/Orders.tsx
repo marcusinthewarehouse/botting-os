@@ -17,7 +17,7 @@ const Orders: React.FC = () => {
 
   const totalProfit = filteredOrders.reduce((a, b) => a + b.profit, 0);
   const successCount = filteredOrders.filter(o => o.status === 'success').length;
-  const stores = [...new Set(store.orders.map(o => o.store))];
+  const stores = Array.from(new Set(store.orders.map(o => o.store)));
 
   return (
     <div className="flex-1 overflow-auto bg-gradient-to-br from-slate-900 to-slate-800">
