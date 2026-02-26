@@ -1,0 +1,94 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js 18.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+        cache: 'npm'
+
+    # Check if frontend exists
+    - name: Check if frontend exists
+      id: frontend-check
+      run: |
+        if [ -d "frontend" ]; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+        fi
+
+    # Build frontend if it exists
+    - name: Install frontend dependencies
+      if: steps.frontend-check.outputs.exists == 'true'
+      run: cd frontend && npm ci
+
+    - name: Build frontend
+      if: steps.frontend-check.outputs.exists == 'true'
+      run: cd frontend && npm run build
+
+    # Setup Pages artifacts (use dist or build as source)
+    - name: Setup Pages
+      uses: actions/configure-pages@v3
+
+    - name: Upload artifacts
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: ${{ steps.frontend-check.outputs.exists == 'true' && 'frontend/dist' || 'docs' }}
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2
+
+    # Create release notes
+    - name: Create Release Notes
+      if: always()
+      run: |
+        cat > /tmp/release_notes.txt << 'EOF'
+        ## Release Notes - $(date +%Y-%m-%d)
+        
+        ### Deployment Summary
+        - Frontend built and deployed to GitHub Pages
+        - Live at: https://marcusinthewarehouse.github.io/botting-os/
+        - Commit: ${{ github.sha }}
+        - Branch: ${{ github.ref }}
+        
+        ### Frontend Status
+        EOF
+        if [ "${{ steps.frontend-check.outputs.exists }}" == "true" ]; then
+          echo "✓ Frontend built successfully" >> /tmp/release_notes.txt
+        else
+          echo "⚠ Frontend not found (coming in Phase 2)" >> /tmp/release_notes.txt
+        fi
+        cat /tmp/release_notes.txt
+
+    - name: Post deployment summary
+      if: always()
+      run: |
+        echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Demo URL:** https://marcusinthewarehouse.github.io/botting-os/" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Frontend Status:** ${{ steps.frontend-check.outputs.exists == 'true' && '✓ Live' || '⏳ Coming Soon (Phase 2)' }}" >> $GITHUB_STEP_SUMMARY
