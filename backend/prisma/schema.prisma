@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Order {
+  id        String   @id @default(cuid())
+  product   String
+  site      String
+  size      String?
+  price     Float
+  status    String   @default("pending") // pending, success, failed, cancelled
+  account   String?
+  proxy     String?
+  bot       String?
+  profit    Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Proxy {
+  id        String   @id @default(cuid())
+  host      String
+  port      Int
+  username  String?
+  password  String?
+  provider  String?
+  type      String   @default("residential") // residential, datacenter, isp
+  status    String   @default("active") // active, inactive, banned
+  speed     Int?     // ms latency
+  lastCheck DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id        String   @id @default(cuid())
+  site      String   // target, walmart, bestbuy, etc.
+  email     String
+  password  String
+  status    String   @default("active") // active, inactive, banned, captcha
+  proxy     String?
+  profile   String?  // browser profile
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  category    String   // proxy, bot, account, server, other
+  description String
+  amount      Float
+  date        DateTime @default(now())
+  recurring   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Settings {
+  id    String @id @default("default")
+  key   String @unique
+  value String
+}
