@@ -56,7 +56,7 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-pages-artifact@v2
       with:
-        path: ${{ steps.frontend-check.outputs.exists == 'true' && 'frontend/dist' || 'docs' }}
+        path: ${{ steps.frontend-check.outputs.exists == 'true' && 'frontend/build' || 'docs' }}
 
     - name: Deploy to GitHub Pages
       id: deployment
