@@ -36,6 +36,7 @@ const activeItems: NavItem[] = [
   { title: 'Calculator', icon: Calculator, path: '/calculator' },
   { title: 'Tracker', icon: TrendingUp, path: '/tracker' },
   { title: 'Orders', icon: Package, path: '/orders' },
+  { title: 'Inventory', icon: Boxes, path: '/inventory' },
   { title: 'Emails', icon: Mail, path: '/emails' },
   { title: 'Vault', icon: Lock, path: '/vault' },
   { title: 'VCC', icon: CreditCard, path: '/vcc' },
@@ -43,7 +44,6 @@ const activeItems: NavItem[] = [
 ];
 
 const comingSoonItems: NavItem[] = [
-  { title: 'Inventory', icon: Boxes, path: '/inventory', comingSoon: true },
   { title: 'Analytics', icon: BarChart3, path: '/analytics', comingSoon: true },
   { title: 'Calendar', icon: Calendar, path: '/calendar', comingSoon: true },
   { title: 'Resources', icon: BookOpen, path: '/resources', comingSoon: true },
