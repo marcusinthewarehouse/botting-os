@@ -35,15 +35,15 @@ const activeItems: NavItem[] = [
   { title: 'Dashboard', icon: LayoutDashboard, path: '/' },
   { title: 'Calculator', icon: Calculator, path: '/calculator' },
   { title: 'Tracker', icon: TrendingUp, path: '/tracker' },
+  { title: 'Orders', icon: Package, path: '/orders' },
   { title: 'Emails', icon: Mail, path: '/emails' },
   { title: 'Vault', icon: Lock, path: '/vault' },
   { title: 'VCC', icon: CreditCard, path: '/vcc' },
+  { title: 'Discord', icon: MessageSquare, path: '/discord' },
 ];
 
 const comingSoonItems: NavItem[] = [
-  { title: 'Orders', icon: Package, path: '/orders', comingSoon: true },
   { title: 'Inventory', icon: Boxes, path: '/inventory', comingSoon: true },
-  { title: 'Discord', icon: MessageSquare, path: '/discord', comingSoon: true },
   { title: 'Analytics', icon: BarChart3, path: '/analytics', comingSoon: true },
   { title: 'Calendar', icon: Calendar, path: '/calendar', comingSoon: true },
   { title: 'Resources', icon: BookOpen, path: '/resources', comingSoon: true },
@@ -137,7 +137,7 @@ export function AppSidebar() {
             key={item.path}
             item={item}
             collapsed={collapsed}
-            isActive={pathname === item.path}
+            isActive={item.path === '/' ? pathname === '/' : pathname.startsWith(item.path)}
           />
         ))}
 
