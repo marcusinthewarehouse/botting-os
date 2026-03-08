@@ -19,6 +19,21 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 const MAX_MESSAGES = 2000;
+const SESSION_KEY = 'bottingos:discord_messages';
+
+function loadSessionMessages(): DiscordMessage[] {
+  try {
+    const stored = sessionStorage.getItem(SESSION_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch { /* ignore */ }
+  return [];
+}
+
+function saveSessionMessages(msgs: DiscordMessage[]) {
+  try {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(msgs.slice(-MAX_MESSAGES)));
+  } catch { /* ignore - storage full */ }
+}
 
 interface StatusInfo {
   connected: boolean;
@@ -26,7 +41,7 @@ interface StatusInfo {
 }
 
 export default function DiscordPage() {
-  const [messages, setMessages] = useState<DiscordMessage[]>([]);
+  const [messages, setMessages] = useState<DiscordMessage[]>(loadSessionMessages);
   const [status, setStatus] = useState<StatusInfo>({ connected: false, message: 'Not connected' });
   const [channels, setChannels] = useState<DiscordChannel[]>([]);
   const [keywords, setKeywords] = useState<string[]>([]);
@@ -127,7 +142,9 @@ export default function DiscordPage() {
       const unMsg = await listen<DiscordMessage>('discord-message', (event) => {
         setMessages((prev) => {
           const next = [...prev, event.payload];
-          return next.length > MAX_MESSAGES ? next.slice(next.length - MAX_MESSAGES) : next;
+          const trimmed = next.length > MAX_MESSAGES ? next.slice(next.length - MAX_MESSAGES) : next;
+          saveSessionMessages(trimmed);
+          return trimmed;
         });
       });
 
