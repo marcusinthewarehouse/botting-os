@@ -6,6 +6,7 @@ import { useCrypto } from '@/components/providers/crypto-provider';
 import { PageTransition } from '@/components/page-transition';
 import { PageHeader } from '@/components/ui/page-header';
 import { EmptyState } from '@/components/ui/empty-state';
+import { CardSkeleton } from '@/components/skeletons/card-skeleton';
 import { Input } from '@/components/ui/input';
 import { EntryCard } from '@/components/vault/entry-card';
 import { EntryForm } from '@/components/vault/entry-form';
@@ -15,6 +16,7 @@ import type { DecryptedVaultEntry } from '@/lib/db/repositories/vault';
 export default function VaultPage() {
   const { isUnlocked, lock } = useCrypto();
   const [entries, setEntries] = useState<DecryptedVaultEntry[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const [search, setSearch] = useState('');
   const [panicHide, setPanicHide] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
@@ -27,6 +29,8 @@ export default function VaultPage() {
       setEntries(all);
     } catch {
       setEntries([]);
+    } finally {
+      setLoaded(true);
     }
   }, [isUnlocked]);
 
@@ -82,6 +86,7 @@ export default function VaultPage() {
 
   const handleLock = useCallback(() => {
     setEntries([]);
+    setLoaded(false);
     setPanicHide(false);
     setSearch('');
     lock();
@@ -162,7 +167,9 @@ export default function VaultPage() {
       )}
 
       {/* Entry grid */}
-      {entries.length === 0 ? (
+      {!loaded ? (
+        <CardSkeleton count={6} />
+      ) : entries.length === 0 ? (
         <EmptyState
           icon={KeyRound}
           title="No credentials yet"

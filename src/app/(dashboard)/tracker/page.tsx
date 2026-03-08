@@ -18,6 +18,8 @@ import { PageHeader } from '@/components/ui/page-header';
 import { PageTransition } from '@/components/page-transition';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/ui/empty-state';
+import { CardSkeleton } from '@/components/skeletons/card-skeleton';
+import { TableSkeleton } from '@/components/skeletons/table-skeleton';
 import { SummaryCards } from '@/components/tracker/summary-cards';
 import { EntryForm } from '@/components/tracker/entry-form';
 import { CsvImport } from '@/components/tracker/csv-import';
@@ -45,6 +47,7 @@ function isIncome(type: string): boolean {
 
 export default function TrackerPage() {
   const [entries, setEntries] = useState<TrackerEntry[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const [entryFormOpen, setEntryFormOpen] = useState(false);
   const [csvImportOpen, setCsvImportOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,12 +55,17 @@ export default function TrackerPage() {
   const [categoryFilter, setCategoryFilter] = useState('all');
 
   const loadEntries = useCallback(async () => {
-    if (!IS_TAURI) return;
+    if (!IS_TAURI) {
+      setLoaded(true);
+      return;
+    }
     try {
       const all = await trackerRepo.getAll();
       setEntries(all);
     } catch {
       // DB not available yet
+    } finally {
+      setLoaded(true);
     }
   }, []);
 
@@ -187,6 +195,13 @@ export default function TrackerPage() {
         ]}
       />
 
+      {!loaded ? (
+        <div className="space-y-6">
+          <CardSkeleton count={4} />
+          <TableSkeleton rows={6} columns={6} />
+        </div>
+      ) : (
+      <>
       <SummaryCards
         totalIncome={totals.totalIncome}
         totalExpenses={totals.totalExpenses}
@@ -319,6 +334,8 @@ export default function TrackerPage() {
           </Table>
         )}
       </Card>
+      </>
+      )}
 
       <EntryForm open={entryFormOpen} onOpenChange={setEntryFormOpen} onSubmit={handleAddEntry} />
       <CsvImport open={csvImportOpen} onOpenChange={setCsvImportOpen} onImport={handleCsvImport} />

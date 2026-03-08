@@ -5,6 +5,7 @@ import { CalendarDays, List, Plus } from 'lucide-react';
 import { PageHeader } from '@/components/ui/page-header';
 import { PageTransition } from '@/components/page-transition';
 import { EmptyState } from '@/components/ui/empty-state';
+import { CalendarSkeleton } from '@/components/skeletons/calendar-skeleton';
 import { Card } from '@/components/ui/card';
 import { MonthView } from '@/components/calendar/month-view';
 import { ListView } from '@/components/calendar/list-view';
@@ -19,6 +20,7 @@ type ViewMode = 'month' | 'list';
 
 export default function CalendarPage() {
   const [drops, setDrops] = useState<Drop[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [formOpen, setFormOpen] = useState(false);
   const [editDrop, setEditDrop] = useState<Drop | null>(null);
@@ -29,12 +31,17 @@ export default function CalendarPage() {
   const [month, setMonth] = useState(now.getMonth());
 
   const loadDrops = useCallback(async () => {
-    if (!IS_TAURI) return;
+    if (!IS_TAURI) {
+      setLoaded(true);
+      return;
+    }
     try {
       const all = await dropsRepo.getAll();
       setDrops(all);
     } catch {
       // DB not available yet
+    } finally {
+      setLoaded(true);
     }
   }, []);
 
@@ -180,7 +187,9 @@ export default function CalendarPage() {
         </button>
       </div>
 
-      {drops.length === 0 ? (
+      {!loaded ? (
+        <CalendarSkeleton />
+      ) : drops.length === 0 ? (
         <Card className="bg-black border-white/[0.06]">
           <EmptyState
             icon={CalendarDays}

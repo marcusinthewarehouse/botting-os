@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { PageHeader } from '@/components/ui/page-header';
 import { PageTransition } from '@/components/page-transition';
 import { EmptyState } from '@/components/ui/empty-state';
+import { TableSkeleton } from '@/components/skeletons/table-skeleton';
 import { BulkImport } from '@/components/emails/bulk-import';
 import { ViewToggle } from '@/components/emails/view-toggle';
 import { SourceView } from '@/components/emails/source-view';
@@ -22,6 +23,7 @@ const STATUSES = ['active', 'banned', 'suspended'] as const;
 
 export default function EmailsPage() {
   const [emails, setEmails] = useState<Email[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const [view, setView] = useState<'source' | 'retailer'>('source');
   const [searchQuery, setSearchQuery] = useState('');
   const [bulkImportOpen, setBulkImportOpen] = useState(false);
@@ -35,12 +37,17 @@ export default function EmailsPage() {
   const [addNotes, setAddNotes] = useState('');
 
   const loadEmails = useCallback(async () => {
-    if (!IS_TAURI) return;
+    if (!IS_TAURI) {
+      setLoaded(true);
+      return;
+    }
     try {
       const all = await emailsRepo.getAll();
       setEmails(all);
     } catch {
       // DB not available yet
+    } finally {
+      setLoaded(true);
     }
   }, []);
 
@@ -146,7 +153,9 @@ export default function EmailsPage() {
         ]}
       />
 
-      {emails.length === 0 ? (
+      {!loaded ? (
+        <TableSkeleton rows={8} columns={4} />
+      ) : emails.length === 0 ? (
         <EmptyState
           icon={Mail}
           title="No emails yet"

@@ -10,6 +10,7 @@ import {
 import { KpiCard } from '@/components/ui/kpi-card';
 import { PageTransition } from '@/components/page-transition';
 import { PageHeader } from '@/components/ui/page-header';
+import { CardSkeleton } from '@/components/skeletons/card-skeleton';
 import { IS_TAURI } from '@/lib/db/client';
 
 function fmtCurrency(value: number): string {
@@ -26,9 +27,13 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   const loadStats = useCallback(async () => {
-    if (!IS_TAURI) return;
+    if (!IS_TAURI) {
+      setLoaded(true);
+      return;
+    }
     try {
       const { inventoryRepo, emailsRepo, vccsRepo, trackerRepo } = await import('@/lib/db/repositories');
       const [allInventory, allEmails, allVccs, allTracker] = await Promise.all([
@@ -69,6 +74,8 @@ export default function DashboardPage() {
       });
     } catch {
       // DB not available
+    } finally {
+      setLoaded(true);
     }
   }, []);
 
@@ -82,6 +89,9 @@ export default function DashboardPage() {
     <PageTransition>
       <PageHeader title="Dashboard" description="Your command center for botting operations." />
 
+      {!loaded ? (
+        <CardSkeleton count={4} />
+      ) : (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           title="Total Profit"
@@ -93,6 +103,7 @@ export default function DashboardPage() {
         <KpiCard title="VCCs Tracked" value={s ? String(s.vccsTracked) : '0'} />
         <KpiCard title="Inventory Items" value={s ? String(s.inventoryItems) : '0'} />
       </div>
+      )}
 
       {s && s.totalProfit === 0 && s.activeEmails === 0 && s.vccsTracked === 0 && s.inventoryItems === 0 && (
         <div className="mt-8 rounded-lg border border-white/[0.06] bg-black p-8 text-center">

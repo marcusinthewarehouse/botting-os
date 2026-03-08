@@ -173,6 +173,7 @@ export function NotificationCenter() {
         size="icon"
         className="relative h-7 w-7"
         onClick={() => setOpen((prev) => !prev)}
+        aria-label="Notifications"
       >
         <Bell className="h-4 w-4 text-zinc-400" />
         {unreadCount > 0 && (

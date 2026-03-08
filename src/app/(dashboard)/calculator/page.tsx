@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { PageHeader } from '@/components/ui/page-header';
 import { PageTransition } from '@/components/page-transition';
 import { EmptyState } from '@/components/ui/empty-state';
+import { TableSkeleton } from '@/components/skeletons/table-skeleton';
 import { ProductSearch } from '@/components/calculator/product-search';
 import { PriceComparison, type MarketplacePrices } from '@/components/calculator/price-comparison';
 import { FeeDetails } from '@/components/calculator/fee-details';
@@ -35,6 +36,7 @@ export default function CalculatorPage() {
   const [showSettings, setShowSettings] = useState(false);
   const [showAlertDialog, setShowAlertDialog] = useState(false);
   const [history, setHistory] = useState<CalculatorHistory[]>([]);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
 
   const purchase = parseFloat(purchasePrice) || 0;
 
@@ -49,12 +51,17 @@ export default function CalculatorPage() {
   const hasAnyPrice = Object.keys(salePrices).length > 0;
 
   const loadHistory = useCallback(async () => {
-    if (!IS_TAURI) return;
+    if (!IS_TAURI) {
+      setHistoryLoaded(true);
+      return;
+    }
     try {
       const all = await calculatorRepo.getAll();
       setHistory(all.slice(0, 20));
     } catch {
       // DB not available yet
+    } finally {
+      setHistoryLoaded(true);
     }
   }, []);
 
@@ -239,11 +246,15 @@ export default function CalculatorPage() {
         {/* History */}
         <div>
           <h2 className="text-sm font-medium text-zinc-400 mb-3">Recent Calculations</h2>
-          <HistoryList
-            history={history}
-            onSelect={handleSelectHistory}
-            onDelete={handleDeleteHistory}
-          />
+          {!historyLoaded ? (
+            <TableSkeleton rows={3} columns={3} />
+          ) : (
+            <HistoryList
+              history={history}
+              onSelect={handleSelectHistory}
+              onDelete={handleDeleteHistory}
+            />
+          )}
         </div>
       </div>
 

@@ -50,6 +50,7 @@ export function ResourceCard({ resource, onOpen, onEdit, onDelete }: ResourceCar
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); onEdit(); }}
+              aria-label="Edit resource"
               className="p-1 rounded text-zinc-600 hover:text-zinc-300 hover:bg-zinc-800 transition-colors duration-150"
             >
               <Pencil className="size-3.5" />
@@ -59,6 +60,7 @@ export function ResourceCard({ resource, onOpen, onEdit, onDelete }: ResourceCar
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); onDelete(); }}
+              aria-label="Delete resource"
               className="p-1 rounded text-zinc-600 hover:text-red-400 hover:bg-zinc-800 transition-colors duration-150"
             >
               <Trash2 className="size-3.5" />

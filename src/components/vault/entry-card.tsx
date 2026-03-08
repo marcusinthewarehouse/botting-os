@@ -38,12 +38,14 @@ export function EntryCard({ entry, onEdit, onDelete }: EntryCardProps) {
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
           <button
             onClick={onEdit}
+            aria-label="Edit entry"
             className="p-1.5 rounded text-zinc-500 hover:text-amber-400 hover:bg-zinc-800 transition-colors duration-150"
           >
             <Pencil className="size-3.5" />
           </button>
           <button
             onClick={onDelete}
+            aria-label="Delete entry"
             className="p-1.5 rounded text-zinc-500 hover:text-red-400 hover:bg-zinc-800 transition-colors duration-150"
           >
             <Trash2 className="size-3.5" />
@@ -59,6 +61,7 @@ export function EntryCard({ entry, onEdit, onDelete }: EntryCardProps) {
         </div>
         <button
           onClick={() => handleCopy(entry.username, 'username')}
+          aria-label="Copy username"
           className="p-1.5 rounded text-zinc-600 hover:text-zinc-300 hover:bg-zinc-800 transition-colors duration-150 shrink-0"
         >
           {copiedField === 'username' ? (
@@ -80,12 +83,14 @@ export function EntryCard({ entry, onEdit, onDelete }: EntryCardProps) {
         <div className="flex gap-0.5 shrink-0">
           <button
             onClick={() => setShowPassword(!showPassword)}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
             className="p-1.5 rounded text-zinc-600 hover:text-zinc-300 hover:bg-zinc-800 transition-colors duration-150"
           >
             {showPassword ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
           </button>
           <button
             onClick={() => handleCopy(entry.password, 'password')}
+            aria-label="Copy password"
             className="p-1.5 rounded text-zinc-600 hover:text-zinc-300 hover:bg-zinc-800 transition-colors duration-150"
           >
             {copiedField === 'password' ? (

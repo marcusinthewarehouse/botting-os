@@ -43,18 +43,21 @@ export function Titlebar() {
           <>
             <button
               onClick={handleMinimize}
+              aria-label="Minimize"
               className="flex items-center justify-center w-11 h-full hover:bg-zinc-800 transition-colors duration-150"
             >
               <Minus className="size-3.5 text-zinc-400" />
             </button>
             <button
               onClick={handleMaximize}
+              aria-label="Maximize"
               className="flex items-center justify-center w-11 h-full hover:bg-zinc-800 transition-colors duration-150"
             >
               <Square className="size-3 text-zinc-400" />
             </button>
             <button
               onClick={handleClose}
+              aria-label="Close"
               className="flex items-center justify-center w-11 h-full hover:bg-red-500/80 transition-colors duration-150"
             >
               <X className="size-3.5 text-zinc-400" />

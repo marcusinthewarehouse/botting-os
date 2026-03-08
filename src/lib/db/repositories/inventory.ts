@@ -1,6 +1,6 @@
 import { db } from '../client';
 import { inventoryItems, orders } from '../schema';
-import { eq, desc, sum, sql, and, ne } from 'drizzle-orm';
+import { eq, desc, sum, sql, and, ne, inArray } from 'drizzle-orm';
 import type { InventoryItem, NewInventoryItem } from '../types';
 
 export async function getAll(): Promise<InventoryItem[]> {
@@ -26,9 +26,8 @@ export async function remove(id: number): Promise<void> {
 }
 
 export async function bulkRemove(ids: number[]): Promise<void> {
-  for (const id of ids) {
-    await db.delete(inventoryItems).where(eq(inventoryItems.id, id));
-  }
+  if (ids.length === 0) return;
+  await db.delete(inventoryItems).where(inArray(inventoryItems.id, ids));
 }
 
 export async function getByCategory(category: string): Promise<InventoryItem[]> {
