@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Calculator, Settings2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,53 +9,42 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { PageHeader } from '@/components/ui/page-header';
 import { PageTransition } from '@/components/page-transition';
-import { FeeBreakdown, type FeeBreakdownData } from '@/components/calculator/fee-breakdown';
+import { EmptyState } from '@/components/ui/empty-state';
+import { ProductSearch } from '@/components/calculator/product-search';
+import { PriceComparison, type MarketplacePrices } from '@/components/calculator/price-comparison';
+import { FeeDetails } from '@/components/calculator/fee-details';
 import { HistoryList } from '@/components/calculator/history-list';
 import { calculatorRepo } from '@/lib/db/repositories';
+import { getDefaultFeeOptions, calculateFlip, type FeeOptions, type Marketplace } from '@/lib/fees';
 import type { CalculatorHistory } from '@/lib/db/types';
+import type { ProductResult } from '@/services/pricing';
 import { IS_TAURI } from '@/lib/db/client';
-
-// Simple placeholder rates - Task 3.2 builds the real fee engine
-const APPROX_FEES = { ebay: 0.1325, stockx: 0.12, goat: 0.125 };
-
-type Marketplace = 'ebay' | 'stockx' | 'goat';
-
-const MARKETPLACE_LABELS: Record<Marketplace, { name: string; feeLabel: string }> = {
-  ebay: { name: 'eBay', feeLabel: '~13.25% total fees' },
-  stockx: { name: 'StockX', feeLabel: '~12% total fees' },
-  goat: { name: 'GOAT', feeLabel: '~12.5% total fees' },
-};
-
-function quickEstimate(
-  salePrice: number,
-  purchasePrice: number,
-  feeRate: number
-): FeeBreakdownData | null {
-  if (salePrice <= 0 || purchasePrice <= 0) return null;
-  const fees = salePrice * feeRate;
-  const profit = salePrice - fees - purchasePrice;
-  return {
-    salePrice,
-    fees: Math.round(fees * 100) / 100,
-    profit: Math.round(profit * 100) / 100,
-    roi: Math.round((profit / purchasePrice) * 100),
-  };
-}
+import { cn } from '@/lib/utils';
 
 export default function CalculatorPage() {
-  const [productName, setProductName] = useState('');
-  const [sku, setSku] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState<ProductResult | null>(null);
   const [purchasePrice, setPurchasePrice] = useState('');
-  const [ebaySalePrice, setEbaySalePrice] = useState('');
-  const [stockxSalePrice, setStockxSalePrice] = useState('');
-  const [goatSalePrice, setGoatSalePrice] = useState('');
+  const [selectedSize, setSelectedSize] = useState('');
+  const [marketplacePrices, setMarketplacePrices] = useState<MarketplacePrices>({
+    stockx: 0,
+    goat: 0,
+    ebay: 0,
+  });
+  const [feeOptions, setFeeOptions] = useState<FeeOptions>(getDefaultFeeOptions);
+  const [showSettings, setShowSettings] = useState(false);
   const [history, setHistory] = useState<CalculatorHistory[]>([]);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const purchase = parseFloat(purchasePrice) || 0;
-  const ebayBreakdown = quickEstimate(parseFloat(ebaySalePrice) || 0, purchase, APPROX_FEES.ebay);
-  const stockxBreakdown = quickEstimate(parseFloat(stockxSalePrice) || 0, purchase, APPROX_FEES.stockx);
-  const goatBreakdown = quickEstimate(parseFloat(goatSalePrice) || 0, purchase, APPROX_FEES.goat);
+
+  const salePrices = useMemo<Partial<Record<Marketplace, number>>>(() => {
+    const prices: Partial<Record<Marketplace, number>> = {};
+    if (marketplacePrices.stockx > 0) prices.stockx = marketplacePrices.stockx;
+    if (marketplacePrices.goat > 0) prices.goat = marketplacePrices.goat;
+    if (marketplacePrices.ebay > 0) prices.ebay = marketplacePrices.ebay;
+    return prices;
+  }, [marketplacePrices]);
+
+  const hasAnyPrice = Object.keys(salePrices).length > 0;
 
   const loadHistory = useCallback(async () => {
     if (!IS_TAURI) return;
@@ -70,17 +60,27 @@ export default function CalculatorPage() {
     loadHistory();
   }, [loadHistory]);
 
+  const handleProductSelect = useCallback((product: ProductResult) => {
+    setSelectedProduct(product);
+    setSelectedSize('');
+  }, []);
+
+  const handlePricesLoaded = useCallback((prices: MarketplacePrices) => {
+    setMarketplacePrices(prices);
+  }, []);
+
   const handleSave = useCallback(async () => {
-    if (!purchase) return;
+    if (!purchase || !hasAnyPrice) return;
+    const results = calculateFlip(purchase, salePrices, feeOptions);
     const resultsJson = JSON.stringify({
-      ebay: ebayBreakdown,
-      stockx: stockxBreakdown,
-      goat: goatBreakdown,
+      ebay: results.find((r) => r.marketplace === 'ebay') ?? null,
+      stockx: results.find((r) => r.marketplace === 'stockx') ?? null,
+      goat: results.find((r) => r.marketplace === 'goat') ?? null,
     });
     try {
       await calculatorRepo.create({
-        productName: productName || 'Untitled',
-        sku: sku || null,
+        productName: selectedProduct?.name || 'Manual Calculation',
+        sku: selectedProduct?.style_id || null,
         purchasePrice: purchase,
         resultsJson,
       });
@@ -88,188 +88,306 @@ export default function CalculatorPage() {
     } catch {
       // DB not available
     }
-  }, [productName, sku, purchase, ebayBreakdown, stockxBreakdown, goatBreakdown, loadHistory]);
+  }, [selectedProduct, purchase, salePrices, feeOptions, hasAnyPrice, loadHistory]);
 
   const handleClear = useCallback(() => {
-    setProductName('');
-    setSku('');
+    setSelectedProduct(null);
     setPurchasePrice('');
-    setEbaySalePrice('');
-    setStockxSalePrice('');
-    setGoatSalePrice('');
+    setSelectedSize('');
+    setMarketplacePrices({ stockx: 0, goat: 0, ebay: 0 });
   }, []);
 
   const handleSelectHistory = useCallback((entry: CalculatorHistory) => {
-    setProductName(entry.productName || '');
-    setSku(entry.sku || '');
     setPurchasePrice(String(entry.purchasePrice));
     try {
-      const results = JSON.parse(entry.resultsJson) as Record<string, FeeBreakdownData | null>;
-      if (results.ebay?.salePrice) setEbaySalePrice(String(results.ebay.salePrice));
-      if (results.stockx?.salePrice) setStockxSalePrice(String(results.stockx.salePrice));
-      if (results.goat?.salePrice) setGoatSalePrice(String(results.goat.salePrice));
+      const results = JSON.parse(entry.resultsJson) as Record<string, { salePrice?: number } | null>;
+      setMarketplacePrices({
+        stockx: results.stockx?.salePrice ?? 0,
+        goat: results.goat?.salePrice ?? 0,
+        ebay: results.ebay?.salePrice ?? 0,
+      });
     } catch {
       // Invalid JSON
     }
   }, []);
 
-  const handleDeleteHistory = useCallback(async (id: number) => {
-    try {
-      await calculatorRepo.remove(id);
-      await loadHistory();
-    } catch {
-      // DB not available
-    }
-  }, [loadHistory]);
-
-  // Debounced input helper
-  function handlePriceInput(setter: (v: string) => void) {
-    return (e: React.ChangeEvent<HTMLInputElement>) => {
-      const val = e.target.value;
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => setter(val), 200);
-      setter(val);
-    };
-  }
+  const handleDeleteHistory = useCallback(
+    async (id: number) => {
+      try {
+        await calculatorRepo.remove(id);
+        await loadHistory();
+      } catch {
+        // DB not available
+      }
+    },
+    [loadHistory]
+  );
 
   return (
     <PageTransition>
       <PageHeader
         title="Flip Calculator"
-        description="Calculate profit projections across marketplaces."
+        description="Search products, compare marketplace prices, and calculate profit."
         actions={[
           { label: 'Clear', onClick: handleClear, variant: 'outline' },
           { label: 'Save', onClick: handleSave },
         ]}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Input Form */}
-        <div className="lg:col-span-1">
-          <Card className="p-5 bg-black border-white/[0.06] space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="product-name" className="text-zinc-400 text-xs">Product Name</Label>
-              <Input
-                id="product-name"
-                placeholder="Jordan 1 Retro High"
-                value={productName}
-                onChange={(e) => setProductName(e.target.value)}
-                className="bg-zinc-900 border-zinc-800"
-              />
-            </div>
+      <div className="space-y-6">
+        {/* Product Search */}
+        <ProductSearch onSelect={handleProductSelect} />
 
-            <div className="space-y-2">
-              <Label htmlFor="sku" className="text-zinc-400 text-xs">SKU</Label>
-              <Input
-                id="sku"
-                placeholder="555088-134"
-                value={sku}
-                onChange={(e) => setSku(e.target.value)}
-                className="bg-zinc-900 border-zinc-800"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="purchase-price" className="text-zinc-400 text-xs">Purchase Price</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500">$</span>
-                <Input
-                  id="purchase-price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={purchasePrice}
-                  onChange={handlePriceInput(setPurchasePrice)}
-                  className="bg-zinc-900 border-zinc-800 pl-7 font-mono tabular-nums"
+        {/* Selected Product Info */}
+        {selectedProduct && (
+          <Card className="p-4 bg-black border-white/[0.06]">
+            <div className="flex items-center gap-4">
+              {selectedProduct.thumbnail ? (
+                <img
+                  src={selectedProduct.thumbnail}
+                  alt=""
+                  className="size-16 rounded-lg object-cover bg-zinc-800 shrink-0"
                 />
-              </div>
-            </div>
-
-            <Separator className="bg-white/[0.06]" />
-
-            <div className="space-y-2">
-              <Label htmlFor="ebay-price" className="text-zinc-400 text-xs">eBay Sale Price</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500">$</span>
-                <Input
-                  id="ebay-price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={ebaySalePrice}
-                  onChange={handlePriceInput(setEbaySalePrice)}
-                  className="bg-zinc-900 border-zinc-800 pl-7 font-mono tabular-nums"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="stockx-price" className="text-zinc-400 text-xs">StockX Sale Price</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500">$</span>
-                <Input
-                  id="stockx-price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={stockxSalePrice}
-                  onChange={handlePriceInput(setStockxSalePrice)}
-                  className="bg-zinc-900 border-zinc-800 pl-7 font-mono tabular-nums"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="goat-price" className="text-zinc-400 text-xs">GOAT Sale Price</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500">$</span>
-                <Input
-                  id="goat-price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={goatSalePrice}
-                  onChange={handlePriceInput(setGoatSalePrice)}
-                  className="bg-zinc-900 border-zinc-800 pl-7 font-mono tabular-nums"
-                />
+              ) : (
+                <div className="size-16 rounded-lg bg-zinc-800 shrink-0" />
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-zinc-50 truncate">{selectedProduct.name}</p>
+                <div className="flex items-center gap-3 text-xs text-zinc-500 mt-0.5">
+                  {selectedProduct.style_id && (
+                    <span className="font-mono">{selectedProduct.style_id}</span>
+                  )}
+                  {selectedProduct.brand && <span>{selectedProduct.brand}</span>}
+                  {selectedProduct.retail_price > 0 && (
+                    <span className="font-mono tabular-nums">
+                      ${selectedProduct.retail_price.toFixed(0)} retail
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </Card>
+        )}
+
+        {/* Purchase Price + Settings Toggle */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <div className="lg:col-span-3">
+            <Label htmlFor="purchase-price" className="text-zinc-400 text-xs">
+              Purchase Price (Cost Basis)
+            </Label>
+            <div className="relative mt-1">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500">$</span>
+              <Input
+                id="purchase-price"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                value={purchasePrice}
+                onChange={(e) => setPurchasePrice(e.target.value)}
+                className="bg-zinc-900 border-zinc-800 pl-7 font-mono tabular-nums"
+              />
+            </div>
+          </div>
+          <div className="flex items-end">
+            <Button
+              variant="outline"
+              onClick={() => setShowSettings(!showSettings)}
+              className="w-full"
+            >
+              <Settings2 className="size-4 mr-2" />
+              Fee Settings
+            </Button>
+          </div>
         </div>
 
-        {/* Results */}
-        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <FeeBreakdown
-            marketplace={MARKETPLACE_LABELS.ebay.name}
-            feeLabel={MARKETPLACE_LABELS.ebay.feeLabel}
-            breakdown={ebayBreakdown}
-          />
-          <FeeBreakdown
-            marketplace={MARKETPLACE_LABELS.stockx.name}
-            feeLabel={MARKETPLACE_LABELS.stockx.feeLabel}
-            breakdown={stockxBreakdown}
-          />
-          <FeeBreakdown
-            marketplace={MARKETPLACE_LABELS.goat.name}
-            feeLabel={MARKETPLACE_LABELS.goat.feeLabel}
-            breakdown={goatBreakdown}
-          />
-        </div>
-      </div>
+        {/* Fee Settings Panel */}
+        {showSettings && (
+          <FeeSettingsPanel feeOptions={feeOptions} onChange={setFeeOptions} />
+        )}
 
-      {/* History */}
-      <div className="mt-8">
-        <h2 className="text-sm font-medium text-zinc-400 mb-3">Recent Calculations</h2>
-        <HistoryList
-          history={history}
-          onSelect={handleSelectHistory}
-          onDelete={handleDeleteHistory}
+        {/* Price Comparison */}
+        <PriceComparison
+          product={selectedProduct}
+          onPricesLoaded={handlePricesLoaded}
+          selectedSize={selectedSize}
+          onSizeChange={setSelectedSize}
         />
+
+        {/* Fee Details */}
+        {purchase > 0 && hasAnyPrice ? (
+          <FeeDetails
+            purchasePrice={purchase}
+            salePrices={salePrices}
+            feeOptions={feeOptions}
+          />
+        ) : (
+          !selectedProduct && (
+            <EmptyState
+              icon={Calculator}
+              title="No product selected"
+              description="Search for a product above or enter prices manually to calculate profit."
+            />
+          )
+        )}
+
+        <Separator className="bg-white/[0.06]" />
+
+        {/* History */}
+        <div>
+          <h2 className="text-sm font-medium text-zinc-400 mb-3">Recent Calculations</h2>
+          <HistoryList
+            history={history}
+            onSelect={handleSelectHistory}
+            onDelete={handleDeleteHistory}
+          />
+        </div>
       </div>
     </PageTransition>
+  );
+}
+
+// Fee settings inline panel
+function FeeSettingsPanel({
+  feeOptions,
+  onChange,
+}: {
+  feeOptions: FeeOptions;
+  onChange: (opts: FeeOptions) => void;
+}) {
+  const selectClass =
+    'w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50';
+
+  return (
+    <Card className="p-5 bg-black border-white/[0.06]">
+      <p className="text-sm font-medium text-zinc-50 mb-4">Fee Configuration</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* eBay */}
+        <div className="space-y-3">
+          <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">eBay</p>
+          <div className="space-y-1.5">
+            <Label className="text-zinc-500 text-xs">Category</Label>
+            <select
+              value={feeOptions.ebay?.category ?? 'sneakers'}
+              onChange={(e) =>
+                onChange({
+                  ...feeOptions,
+                  ebay: { ...feeOptions.ebay!, category: e.target.value as 'sneakers' | 'general' | 'books_media' },
+                })
+              }
+              className={selectClass}
+            >
+              <option value="sneakers">Sneakers</option>
+              <option value="general">General</option>
+              <option value="books_media">Books/Media</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="ebay-store"
+              checked={feeOptions.ebay?.hasStore ?? false}
+              onChange={(e) =>
+                onChange({
+                  ...feeOptions,
+                  ebay: { ...feeOptions.ebay!, hasStore: e.target.checked },
+                })
+              }
+              className="rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-amber-500/50"
+            />
+            <Label htmlFor="ebay-store" className="text-zinc-400 text-xs">
+              eBay Store
+            </Label>
+          </div>
+        </div>
+
+        {/* StockX */}
+        <div className="space-y-3">
+          <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">StockX</p>
+          <div className="space-y-1.5">
+            <Label className="text-zinc-500 text-xs">Seller Level</Label>
+            <select
+              value={feeOptions.stockx?.sellerLevel ?? 1}
+              onChange={(e) =>
+                onChange({
+                  ...feeOptions,
+                  stockx: { ...feeOptions.stockx!, sellerLevel: parseInt(e.target.value) as 1 | 2 | 3 | 4 | 5 },
+                })
+              }
+              className={selectClass}
+            >
+              {[1, 2, 3, 4, 5].map((l) => (
+                <option key={l} value={l}>
+                  Level {l}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-2">
+            {[
+              { id: 'stockx-qs', label: 'Quick Ship', key: 'hasQuickShip' as const },
+              { id: 'stockx-ss', label: 'Successful Ship', key: 'hasSuccessfulShip' as const },
+              { id: 'stockx-pp', label: 'Processing Waived', key: 'paymentProcessingWaived' as const },
+            ].map(({ id, label, key }) => (
+              <div key={id} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id={id}
+                  checked={(feeOptions.stockx?.[key] as boolean) ?? false}
+                  onChange={(e) =>
+                    onChange({
+                      ...feeOptions,
+                      stockx: { ...feeOptions.stockx!, [key]: e.target.checked },
+                    })
+                  }
+                  className="rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-amber-500/50"
+                />
+                <Label htmlFor={id} className="text-zinc-400 text-xs">
+                  {label}
+                </Label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* GOAT */}
+        <div className="space-y-3">
+          <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">GOAT</p>
+          <div className="space-y-1.5">
+            <Label className="text-zinc-500 text-xs">Seller Rating</Label>
+            <Input
+              type="number"
+              min="0"
+              max="100"
+              value={feeOptions.goat?.sellerRating ?? 90}
+              onChange={(e) =>
+                onChange({
+                  ...feeOptions,
+                  goat: { ...feeOptions.goat!, sellerRating: parseInt(e.target.value) || 90 },
+                })
+              }
+              className="bg-zinc-900 border-zinc-800 font-mono tabular-nums"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="goat-ca"
+              checked={feeOptions.goat?.isCanadian ?? false}
+              onChange={(e) =>
+                onChange({
+                  ...feeOptions,
+                  goat: { ...feeOptions.goat!, isCanadian: e.target.checked },
+                })
+              }
+              className="rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-amber-500/50"
+            />
+            <Label htmlFor="goat-ca" className="text-zinc-400 text-xs">
+              Canadian Seller
+            </Label>
+          </div>
+        </div>
+      </div>
+    </Card>
   );
 }
