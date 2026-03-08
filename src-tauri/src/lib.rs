@@ -15,6 +15,9 @@ pub fn run() {
       commands::pricing::search_products,
       commands::pricing::get_product_prices,
       commands::pricing::search_ebay,
+      commands::discord::check_discord_status,
+      commands::discord::start_discord_cdp,
+      commands::discord::stop_discord_cdp,
     ])
     .setup(|app| {
       if cfg!(debug_assertions) {
