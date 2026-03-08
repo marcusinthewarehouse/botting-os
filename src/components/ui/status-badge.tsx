@@ -13,13 +13,16 @@ const statusColors: Record<string, string> = {
   sold: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
   completed: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
   delivered: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
+  used: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
   error: 'bg-red-500/15 text-red-400 border-red-500/25',
   cancelled: 'bg-red-500/15 text-red-400 border-red-500/25',
   expired: 'bg-red-500/15 text-red-400 border-red-500/25',
   banned: 'bg-red-500/15 text-red-400 border-red-500/25',
+  flagged: 'bg-red-500/15 text-red-400 border-red-500/25',
   inactive: 'bg-zinc-500/15 text-zinc-400 border-zinc-500/25',
   unused: 'bg-zinc-500/15 text-zinc-400 border-zinc-500/25',
   draft: 'bg-zinc-500/15 text-zinc-400 border-zinc-500/25',
+  closed: 'bg-zinc-500/15 text-zinc-400 border-zinc-500/25',
 };
 
 interface StatusBadgeProps {
