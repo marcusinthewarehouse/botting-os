@@ -1,8 +1,13 @@
 use std::process::Command;
+use std::sync::Arc;
 use std::time::Duration;
 
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
+use tauri::State;
+use tokio::sync::Mutex;
+
+use crate::discord::cdp;
 
 const CDP_PORT: u16 = 9223;
 const CDP_BASE: &str = "http://127.0.0.1:9223";
@@ -39,6 +44,24 @@ pub struct CdpVersion {
 }
 
 // ---------------------------------------------------------------------------
+// Managed State
+// ---------------------------------------------------------------------------
+
+pub struct CdpState {
+    pub ws_url: Arc<Mutex<Option<String>>>,
+    pub capture_handle: Arc<Mutex<Option<tokio::task::JoinHandle<()>>>>,
+}
+
+impl CdpState {
+    pub fn new() -> Self {
+        Self {
+            ws_url: Arc::new(Mutex::new(None)),
+            capture_handle: Arc::new(Mutex::new(None)),
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Platform helpers
 // ---------------------------------------------------------------------------
 
@@ -70,6 +93,10 @@ fn is_discord_running() -> bool {
         .output()
         .map(|o| o.status.success())
         .unwrap_or(false)
+}
+
+pub fn is_discord_running_pub() -> bool {
+    is_discord_running()
 }
 
 #[cfg(target_os = "macos")]
@@ -122,7 +149,6 @@ fn find_discord_path() -> Option<String> {
 
 #[cfg(not(any(target_os = "macos", target_os = "windows")))]
 fn find_discord_path() -> Option<String> {
-    // Linux: check common paths
     let paths = ["/usr/bin/discord", "/usr/bin/Discord"];
     for p in paths {
         if std::path::Path::new(p).exists() {
@@ -148,9 +174,7 @@ fn launch_discord_with_cdp() -> Result<(), String> {
 
 #[cfg(target_os = "windows")]
 fn launch_discord_with_cdp() -> Result<(), String> {
-    let path = find_discord_path()
-        .ok_or("Discord not found. Is it installed?")?;
-
+    let path = find_discord_path().ok_or("Discord not found. Is it installed?")?;
     Command::new(&path)
         .args([
             "--processStart",
@@ -165,9 +189,7 @@ fn launch_discord_with_cdp() -> Result<(), String> {
 
 #[cfg(not(any(target_os = "macos", target_os = "windows")))]
 fn launch_discord_with_cdp() -> Result<(), String> {
-    let path = find_discord_path()
-        .ok_or("Discord not found. Is it installed?")?;
-
+    let path = find_discord_path().ok_or("Discord not found. Is it installed?")?;
     Command::new(&path)
         .arg(format!("--remote-debugging-port={}", CDP_PORT))
         .spawn()
@@ -186,9 +208,7 @@ fn launch_discord_normal() -> Result<(), String> {
 
 #[cfg(target_os = "windows")]
 fn launch_discord_normal() -> Result<(), String> {
-    let path = find_discord_path()
-        .ok_or("Discord not found. Is it installed?")?;
-
+    let path = find_discord_path().ok_or("Discord not found. Is it installed?")?;
     Command::new(&path)
         .args(["--processStart", "Discord.exe"])
         .spawn()
@@ -198,9 +218,7 @@ fn launch_discord_normal() -> Result<(), String> {
 
 #[cfg(not(any(target_os = "macos", target_os = "windows")))]
 fn launch_discord_normal() -> Result<(), String> {
-    let path = find_discord_path()
-        .ok_or("Discord not found. Is it installed?")?;
-
+    let path = find_discord_path().ok_or("Discord not found. Is it installed?")?;
     Command::new(&path)
         .spawn()
         .map_err(|e| format!("Failed to launch Discord: {}", e))?;
@@ -267,7 +285,7 @@ async fn wait_for_cdp(timeout_secs: u64) -> Result<CdpVersion, String> {
 }
 
 // ---------------------------------------------------------------------------
-// Tauri Commands
+// Tauri Commands - Process Management (Task 5.1)
 // ---------------------------------------------------------------------------
 
 #[tauri::command]
@@ -283,7 +301,6 @@ pub async fn check_discord_status() -> Result<DiscordStatus, String> {
         });
     }
 
-    // Check if CDP port is responsive
     let version = check_cdp_version().await;
     let debug_mode = version.is_some();
 
@@ -296,7 +313,6 @@ pub async fn check_discord_status() -> Result<DiscordStatus, String> {
         });
     }
 
-    // Try to find Discord page target
     match find_discord_target().await {
         Ok(target) => Ok(DiscordStatus {
             running: true,
@@ -314,35 +330,35 @@ pub async fn check_discord_status() -> Result<DiscordStatus, String> {
 }
 
 #[tauri::command]
-pub async fn start_discord_cdp() -> Result<DiscordStatus, String> {
-    // Check if Discord is installed
+pub async fn start_discord_cdp(
+    state: State<'_, CdpState>,
+) -> Result<DiscordStatus, String> {
     if find_discord_path().is_none() {
         return Err("Discord is not installed. Please install Discord and try again.".to_string());
     }
 
-    // Check current status - if already connected, return early
     let current = check_discord_status().await?;
     if current.cdp_connected && current.ws_url.is_some() {
+        // Store the ws_url in state for capture commands
+        let mut url_guard = state.ws_url.lock().await;
+        *url_guard = current.ws_url.clone();
         return Ok(current);
     }
 
-    // Kill existing Discord process
     if current.running {
         kill_discord()?;
         tokio::time::sleep(Duration::from_secs(2)).await;
     }
 
-    // Launch with CDP flag
     launch_discord_with_cdp()?;
-
-    // Wait for CDP to become responsive (up to 30 seconds)
     wait_for_cdp(30).await?;
-
-    // Give Discord a moment to fully load the app page
     tokio::time::sleep(Duration::from_secs(3)).await;
 
-    // Find Discord target
     let target = find_discord_target().await?;
+
+    // Store ws_url in state
+    let mut url_guard = state.ws_url.lock().await;
+    *url_guard = Some(target.ws_url.clone());
 
     Ok(DiscordStatus {
         running: true,
@@ -353,7 +369,22 @@ pub async fn start_discord_cdp() -> Result<DiscordStatus, String> {
 }
 
 #[tauri::command]
-pub async fn stop_discord_cdp(relaunch_normal: bool) -> Result<(), String> {
+pub async fn stop_discord_cdp(
+    relaunch_normal: bool,
+    state: State<'_, CdpState>,
+) -> Result<(), String> {
+    // Stop any active capture first
+    let mut handle_guard = state.capture_handle.lock().await;
+    if let Some(handle) = handle_guard.take() {
+        handle.abort();
+    }
+    drop(handle_guard);
+
+    // Clear ws_url
+    let mut url_guard = state.ws_url.lock().await;
+    *url_guard = None;
+    drop(url_guard);
+
     if !is_discord_running() {
         return Ok(());
     }
@@ -366,4 +397,80 @@ pub async fn stop_discord_cdp(relaunch_normal: bool) -> Result<(), String> {
     }
 
     Ok(())
+}
+
+// ---------------------------------------------------------------------------
+// Tauri Commands - CDP Capture (Task 5.2)
+// ---------------------------------------------------------------------------
+
+#[tauri::command]
+pub async fn start_cdp_capture(
+    channel_ids: Vec<String>,
+    app: tauri::AppHandle,
+    state: State<'_, CdpState>,
+) -> Result<(), String> {
+    // Check if capture is already running
+    let mut handle_guard = state.capture_handle.lock().await;
+    if handle_guard.is_some() {
+        return Err("Capture is already running. Stop it first.".to_string());
+    }
+
+    // Get ws_url
+    let url_guard = state.ws_url.lock().await;
+    let ws_url = url_guard
+        .clone()
+        .ok_or("No CDP WebSocket URL. Run start_discord_cdp first.")?;
+    drop(url_guard);
+
+    // If channel_ids were specified, update the filter before starting capture
+    // The capture loop will inject the hook which initializes __bottingos_channels as empty Set
+    // We need to update channels after hook injection, so we pass them via a side channel
+    let ws_url_for_channels = ws_url.clone();
+    let channel_ids_clone = channel_ids.clone();
+
+    // Spawn capture loop
+    let handle = tokio::spawn(async move {
+        // Run the main capture loop (with auto-reconnect)
+        cdp::capture_loop(ws_url, app).await;
+    });
+
+    *handle_guard = Some(handle);
+    drop(handle_guard);
+
+    // If channels were specified, update them after a brief delay for hook injection
+    if !channel_ids_clone.is_empty() {
+        let ws_url_ch = ws_url_for_channels;
+        tokio::spawn(async move {
+            tokio::time::sleep(Duration::from_secs(2)).await;
+            let _ = cdp::update_channels_cdp(&ws_url_ch, &channel_ids_clone).await;
+        });
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn stop_cdp_capture(
+    state: State<'_, CdpState>,
+) -> Result<(), String> {
+    let mut handle_guard = state.capture_handle.lock().await;
+    if let Some(handle) = handle_guard.take() {
+        handle.abort();
+        log::info!("CDP capture stopped");
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn update_monitored_channels(
+    channel_ids: Vec<String>,
+    state: State<'_, CdpState>,
+) -> Result<(), String> {
+    let url_guard = state.ws_url.lock().await;
+    let ws_url = url_guard
+        .clone()
+        .ok_or("No CDP WebSocket URL available.")?;
+    drop(url_guard);
+
+    cdp::update_channels_cdp(&ws_url, &channel_ids).await
 }
