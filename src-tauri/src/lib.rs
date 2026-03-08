@@ -23,6 +23,7 @@ pub fn run() {
       commands::discord::start_cdp_capture,
       commands::discord::stop_cdp_capture,
       commands::discord::update_monitored_channels,
+      commands::discord::get_discord_channels,
     ])
     .setup(|app| {
       if cfg!(debug_assertions) {

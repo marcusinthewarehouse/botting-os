@@ -474,3 +474,16 @@ pub async fn update_monitored_channels(
 
     cdp::update_channels_cdp(&ws_url, &channel_ids).await
 }
+
+#[tauri::command]
+pub async fn get_discord_channels(
+    state: State<'_, CdpState>,
+) -> Result<serde_json::Value, String> {
+    let url_guard = state.ws_url.lock().await;
+    let ws_url = url_guard
+        .clone()
+        .ok_or("No CDP WebSocket URL. Connect to Discord first.")?;
+    drop(url_guard);
+
+    cdp::get_channels_cdp(&ws_url).await
+}

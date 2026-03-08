@@ -172,6 +172,87 @@ pub async fn capture_loop(ws_url: String, app: tauri::AppHandle) {
     }
 }
 
+pub async fn get_channels_cdp(ws_url: &str) -> Result<serde_json::Value, String> {
+    let (ws_stream, _) = connect_async(ws_url)
+        .await
+        .map_err(|e| format!("WebSocket connect failed: {}", e))?;
+
+    let (mut writer, mut reader) = ws_stream.split();
+
+    let script = r#"(function() {
+        let wpRequire;
+        webpackChunkdiscord_app.push([[Symbol()], {}, (r) => { wpRequire = r; }]);
+        webpackChunkdiscord_app.pop();
+
+        const stores = Object.values(wpRequire.c)
+            .map(m => m?.exports).filter(Boolean)
+            .flatMap(e => [e, e.default, e.Z, e.ZP].filter(Boolean));
+
+        const GuildStore = stores.find(m => m?.getGuilds && m?.getGuild);
+        const ChannelStore = stores.find(m => m?.getChannel && m?.getMutableGuildChannelsForGuild);
+
+        if (!GuildStore || !ChannelStore) return JSON.stringify([]);
+
+        const guilds = Object.values(GuildStore.getGuilds());
+        const channels = guilds.flatMap(g => {
+            const guildChannels = ChannelStore.getMutableGuildChannelsForGuild(g.id);
+            return Object.values(guildChannels)
+                .filter(c => c.type === 0)
+                .map(c => ({ id: c.id, name: c.name, guild_id: g.id, guild_name: g.name }));
+        });
+        return JSON.stringify(channels);
+    })()"#;
+
+    let cmd_id = next_id();
+    let cmd = CdpCommand {
+        id: cmd_id,
+        method: "Runtime.evaluate".to_string(),
+        params: serde_json::json!({
+            "expression": script,
+            "returnByValue": true,
+        }),
+    };
+
+    writer
+        .send(Message::Text(serde_json::to_string(&cmd).unwrap_or_default()))
+        .await
+        .map_err(|e| format!("Failed to send channel query: {}", e))?;
+
+    let timeout = tokio::time::timeout(Duration::from_secs(10), async {
+        while let Some(msg_result) = reader.next().await {
+            let msg = msg_result.map_err(|e| format!("WS read error: {}", e))?;
+            let text = match msg {
+                Message::Text(t) => t,
+                _ => continue,
+            };
+
+            let response: CdpResponse = match serde_json::from_str(&text) {
+                Ok(r) => r,
+                Err(_) => continue,
+            };
+
+            if response.id == Some(cmd_id) {
+                let value_str = response
+                    .result
+                    .as_ref()
+                    .and_then(|r| r.get("result"))
+                    .and_then(|r| r.get("value"))
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("[]");
+
+                let parsed: serde_json::Value =
+                    serde_json::from_str(value_str).unwrap_or(serde_json::json!([]));
+                return Ok(parsed);
+            }
+        }
+        Err("WebSocket closed before response".to_string())
+    });
+
+    timeout
+        .await
+        .map_err(|_| "Channel query timed out after 10s".to_string())?
+}
+
 pub async fn update_channels_cdp(ws_url: &str, channel_ids: &[String]) -> Result<(), String> {
     let (ws_stream, _) = connect_async(ws_url)
         .await

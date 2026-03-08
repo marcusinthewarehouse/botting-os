@@ -22,11 +22,9 @@ pub struct CdpCommand {
 
 #[derive(Debug, Deserialize)]
 pub struct CdpResponse {
-    #[allow(dead_code)]
     pub id: Option<u64>,
     pub method: Option<String>,
     pub params: Option<serde_json::Value>,
-    #[allow(dead_code)]
     pub result: Option<serde_json::Value>,
 }
 
