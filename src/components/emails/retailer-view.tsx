@@ -135,7 +135,7 @@ export function RetailerView({
                 right: 0,
                 height: virtualRow.size,
               }}
-              className="flex items-center gap-3 px-4 pl-10 border-b border-white/[0.04] hover:bg-muted/30 group"
+              className="flex items-center gap-3 px-4 pl-10 border-b border-border hover:bg-muted/30 group"
             >
               <span className="text-sm text-muted-foreground flex-1 truncate font-mono">
                 {email.address}

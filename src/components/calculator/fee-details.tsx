@@ -62,7 +62,7 @@ function FlipCard({ result, isBest }: { result: FlipResult; isBest: boolean }) {
   return (
     <Card
       className={cn(
-        "p-4 bg-black border-border transition-colors duration-150",
+        "p-4 bg-card border-border transition-colors duration-150",
         isBest && "border-primary/40",
       )}
     >

@@ -109,7 +109,7 @@ export function ListView({ drops, onDropClick }: ListViewProps) {
             >
               {group.label}
             </span>
-            <div className="flex-1 h-px bg-white/[0.06]" />
+            <div className="flex-1 h-px bg-border" />
           </div>
 
           <div className="space-y-1">
@@ -117,7 +117,7 @@ export function ListView({ drops, onDropClick }: ListViewProps) {
               <button
                 key={drop.id}
                 onClick={() => onDropClick(drop)}
-                className="w-full flex items-center gap-3 rounded-lg bg-black border border-border px-4 py-3 text-left transition-colors duration-150 hover:border-primary/30"
+                className="w-full flex items-center gap-3 rounded-lg bg-card border border-border px-4 py-3 text-left transition-colors duration-150 hover:border-primary/30"
               >
                 <span
                   className={cn(

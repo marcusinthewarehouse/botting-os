@@ -224,7 +224,7 @@ function MarketplaceCard({
 }) {
   if (loading) {
     return (
-      <Card className="p-4 bg-black border-border space-y-3">
+      <Card className="p-4 bg-card border-border space-y-3">
         <Skeleton className="h-4 w-16 bg-muted" />
         <Skeleton className="h-8 w-24 bg-muted" />
         <Skeleton className="h-3 w-20 bg-muted" />
@@ -240,7 +240,7 @@ function MarketplaceCard({
   const lastSale = priceData?.last_sale ?? 0;
 
   return (
-    <Card className="p-4 bg-black border-border space-y-3">
+    <Card className="p-4 bg-card border-border space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-foreground">{name}</p>
         <div className="flex items-center gap-1.5">
@@ -327,7 +327,7 @@ function EbayCard({
 }) {
   if (loading) {
     return (
-      <Card className="p-4 bg-black border-border space-y-3">
+      <Card className="p-4 bg-card border-border space-y-3">
         <Skeleton className="h-4 w-16 bg-muted" />
         <Skeleton className="h-8 w-24 bg-muted" />
         <Skeleton className="h-3 w-20 bg-muted" />
@@ -336,7 +336,7 @@ function EbayCard({
   }
 
   return (
-    <Card className="p-4 bg-black border-border space-y-3">
+    <Card className="p-4 bg-card border-border space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-foreground">eBay</p>
         <button onClick={onRefresh} className="p-1 rounded hover:bg-muted">

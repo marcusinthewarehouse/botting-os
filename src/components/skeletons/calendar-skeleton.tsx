@@ -1,6 +1,6 @@
 export function CalendarSkeleton() {
   return (
-    <div className="rounded-lg border border-border bg-black p-4 animate-pulse">
+    <div className="rounded-lg border border-border bg-card p-4 animate-pulse">
       <div className="flex items-center justify-between mb-4">
         <div className="h-5 bg-muted rounded w-32" />
         <div className="flex gap-2">

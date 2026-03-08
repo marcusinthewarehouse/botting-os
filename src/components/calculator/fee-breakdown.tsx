@@ -34,7 +34,7 @@ export function FeeBreakdown({
 }: FeeBreakdownProps) {
   if (!breakdown) {
     return (
-      <Card className="p-5 bg-black border-border">
+      <Card className="p-5 bg-card border-border">
         <p className="text-sm font-medium text-foreground mb-1">
           {marketplace}
         </p>
@@ -51,7 +51,7 @@ export function FeeBreakdown({
   const positive = breakdown.profit >= 0;
 
   return (
-    <Card className="p-5 bg-black border-border transition-colors duration-150 hover:border-primary/30">
+    <Card className="p-5 bg-card border-border transition-colors duration-150 hover:border-primary/30">
       <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-sm font-medium text-foreground">{marketplace}</p>

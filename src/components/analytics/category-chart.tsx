@@ -48,7 +48,7 @@ function CustomTooltip({
 
 export function CategoryChart({ data, loading }: CategoryChartProps) {
   return (
-    <Card className="bg-black border-border">
+    <Card className="bg-card border-border">
       <CardHeader>
         <CardTitle className="text-sm font-medium text-muted-foreground">
           ROI by Category

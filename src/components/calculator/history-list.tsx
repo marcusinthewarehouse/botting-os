@@ -60,7 +60,7 @@ export function HistoryList({ history, onSelect, onDelete }: HistoryListProps) {
           <Card
             key={entry.id}
             onClick={() => onSelect(entry)}
-            className="flex items-center justify-between px-4 py-3 bg-black border-border cursor-pointer transition-colors duration-150 hover:border-primary/30 group"
+            className="flex items-center justify-between px-4 py-3 bg-card border-border cursor-pointer transition-colors duration-150 hover:border-primary/30 group"
           >
             <div className="flex items-center gap-4 min-w-0">
               <div className="min-w-0">

@@ -177,7 +177,7 @@ export default function CalculatorPage() {
 
         {/* Selected Product Info */}
         {selectedProduct && (
-          <Card className="p-4 bg-black border-border">
+          <Card className="p-4 bg-card border-border">
             <div className="flex items-center gap-4">
               {selectedProduct.thumbnail ? (
                 <img
@@ -279,7 +279,7 @@ export default function CalculatorPage() {
           )
         )}
 
-        <Separator className="bg-white/[0.06]" />
+        <Separator className="bg-border" />
 
         {/* History */}
         <div>
@@ -328,7 +328,7 @@ function FeeSettingsPanel({
     "w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground/80 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50";
 
   return (
-    <Card className="p-5 bg-black border-border">
+    <Card className="p-5 bg-card border-border">
       <p className="text-sm font-medium text-foreground mb-4">
         Fee Configuration
       </p>

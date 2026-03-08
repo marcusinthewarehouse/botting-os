@@ -56,7 +56,7 @@ export function BotChart({ data, loading }: BotChartProps) {
   const [view, setView] = useState<ViewMode>("checkouts");
 
   return (
-    <Card className="bg-black border-border">
+    <Card className="bg-card border-border">
       <CardHeader>
         <CardTitle className="text-sm font-medium text-muted-foreground">
           Bot Performance
@@ -129,7 +129,7 @@ export function BotChart({ data, loading }: BotChartProps) {
               <Tooltip content={<CustomTooltip />} />
               <Bar
                 dataKey={view}
-                fill="#f59e0b"
+                fill="hsl(var(--primary))"
                 radius={[0, 4, 4, 0]}
                 maxBarSize={32}
               />

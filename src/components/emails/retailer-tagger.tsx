@@ -79,7 +79,7 @@ export function RetailerTagger({
             {r}
             <button
               onClick={() => onRemove(r)}
-              className="hover:text-amber-200"
+              className="hover:text-primary/70"
             >
               <X className="size-3" />
             </button>

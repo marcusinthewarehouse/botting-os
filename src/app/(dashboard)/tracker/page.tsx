@@ -313,7 +313,7 @@ export default function TrackerPage() {
           </div>
 
           {/* Transaction table */}
-          <Card className="bg-black border-border overflow-hidden">
+          <Card className="bg-card border-border overflow-hidden">
             {filtered.length === 0 ? (
               entries.length === 0 ? (
                 <EmptyState

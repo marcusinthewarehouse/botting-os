@@ -41,7 +41,7 @@ export function KpiCards({ data, loading }: KpiCardsProps) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="p-6 rounded-xl bg-black border border-border">
+          <div key={i} className="p-6 rounded-xl bg-card border border-border">
             <Skeleton className="h-4 w-24 mb-3" />
             <Skeleton className="h-9 w-32 mb-2" />
             <Skeleton className="h-3 w-20" />

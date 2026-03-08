@@ -121,7 +121,7 @@ export function MonthView({
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-px bg-white/[0.06] rounded-lg overflow-hidden border border-border">
+      <div className="grid grid-cols-7 gap-px bg-border rounded-lg overflow-hidden border border-border">
         {WEEKDAYS.map((day) => (
           <div
             key={day}

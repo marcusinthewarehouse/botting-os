@@ -6,7 +6,7 @@ export function TableSkeleton({
   columns?: number;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-black overflow-hidden">
+    <div className="rounded-lg border border-border bg-card overflow-hidden">
       <div className="flex gap-4 px-4 py-3 border-b border-border">
         {Array.from({ length: columns }).map((_, j) => (
           <div key={j} className="h-3 bg-muted rounded animate-pulse flex-1" />

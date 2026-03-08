@@ -124,7 +124,7 @@ export default function ResourcesPage() {
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="rounded-lg border border-border bg-black p-4 space-y-3 animate-pulse"
+              className="rounded-lg border border-border bg-card p-4 space-y-3 animate-pulse"
             >
               <div className="size-8 rounded-md bg-muted" />
               <div className="h-4 bg-muted rounded w-3/4" />

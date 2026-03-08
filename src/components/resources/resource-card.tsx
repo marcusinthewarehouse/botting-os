@@ -66,7 +66,7 @@ export function ResourceCard({
     <button
       type="button"
       onClick={() => onOpen(resource.url)}
-      className="group flex flex-col gap-3 rounded-lg border border-border bg-black p-4 text-left transition-colors duration-150 hover:border-primary/30"
+      className="group flex flex-col gap-3 rounded-lg border border-border bg-card p-4 text-left transition-colors duration-150 hover:border-primary/30"
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center justify-center size-8 rounded-md bg-muted/50 shrink-0">

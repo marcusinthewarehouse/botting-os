@@ -190,7 +190,7 @@ export default function CalendarPage() {
       {!loaded ? (
         <CalendarSkeleton />
       ) : drops.length === 0 ? (
-        <Card className="bg-black border-border">
+        <Card className="bg-card border-border">
           <EmptyState
             icon={CalendarDays}
             title="No drops yet"
@@ -200,7 +200,7 @@ export default function CalendarPage() {
         </Card>
       ) : viewMode === "month" ? (
         <div className="space-y-4">
-          <Card className="bg-black border-border p-4">
+          <Card className="bg-card border-border p-4">
             <MonthView
               year={year}
               month={month}
@@ -214,7 +214,7 @@ export default function CalendarPage() {
           </Card>
 
           {selectedDate && (
-            <Card className="bg-black border-border p-4">
+            <Card className="bg-card border-border p-4">
               <h3 className="text-sm font-medium text-muted-foreground mb-3">
                 {selectedDate.toLocaleDateString("en-US", {
                   weekday: "long",
@@ -236,7 +236,7 @@ export default function CalendarPage() {
           )}
         </div>
       ) : (
-        <Card className="bg-black border-border p-4">
+        <Card className="bg-card border-border p-4">
           <ListView drops={drops} onDropClick={handleDropClick} />
         </Card>
       )}

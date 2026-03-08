@@ -46,7 +46,7 @@ function CustomTooltip({
 
 export function ProfitChart({ data, loading }: ProfitChartProps) {
   return (
-    <Card className="bg-black border-border">
+    <Card className="bg-card border-border">
       <CardHeader>
         <CardTitle className="text-sm font-medium text-muted-foreground">
           Profit & Spend Over Time

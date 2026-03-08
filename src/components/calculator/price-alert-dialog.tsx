@@ -275,7 +275,7 @@ function AlertRow({
   const triggered = alert.triggered && !alert.recurring;
 
   return (
-    <Card className="flex items-center justify-between px-3 py-2.5 bg-black border-border group">
+    <Card className="flex items-center justify-between px-3 py-2.5 bg-card border-border group">
       <div className="min-w-0 flex-1">
         <p className="text-xs text-foreground/80 truncate">
           {alert.productName}
