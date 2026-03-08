@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useCallback, useMemo, useState } from 'react';
-import { ChevronDown, ChevronRight, Hash, MessageSquare } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useCallback, useMemo, useState } from "react";
+import { ChevronDown, ChevronRight, Hash, MessageSquare } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ChannelInfo {
   id: string;
@@ -34,10 +34,17 @@ function groupByGuild(channels: ChannelInfo[]): GuildGroup[] {
     }
     group.channels.push(ch);
   }
-  return Array.from(map.values()).sort((a, b) => a.guildName.localeCompare(b.guildName));
+  return Array.from(map.values()).sort((a, b) =>
+    a.guildName.localeCompare(b.guildName),
+  );
 }
 
-export function ChannelTree({ channels, unreadCounts, selectedChannel, onSelect }: ChannelTreeProps) {
+export function ChannelTree({
+  channels,
+  unreadCounts,
+  selectedChannel,
+  onSelect,
+}: ChannelTreeProps) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
   const guilds = useMemo(() => groupByGuild(channels), [channels]);
@@ -65,10 +72,10 @@ export function ChannelTree({ channels, unreadCounts, selectedChannel, onSelect 
         type="button"
         onClick={() => onSelect(null)}
         className={cn(
-          'flex items-center justify-between px-3 py-1.5 rounded-md transition-colors duration-150',
+          "flex items-center justify-between px-3 py-1.5 rounded-md transition-colors duration-150",
           selectedChannel === null
-            ? 'bg-amber-500/15 text-amber-400 font-medium'
-            : 'text-zinc-300 hover:bg-zinc-800/50'
+            ? "bg-primary/15 text-primary font-medium"
+            : "text-muted-foreground hover:bg-muted/50",
         )}
       >
         <span className="flex items-center gap-2">
@@ -76,7 +83,7 @@ export function ChannelTree({ channels, unreadCounts, selectedChannel, onSelect 
           All Channels
         </span>
         {totalUnread > 0 && (
-          <span className="text-[10px] font-mono tabular-nums bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
+          <span className="text-[10px] font-mono tabular-nums bg-primary/20 text-primary px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
             {totalUnread}
           </span>
         )}
@@ -86,7 +93,7 @@ export function ChannelTree({ channels, unreadCounts, selectedChannel, onSelect 
         const isCollapsed = collapsed.has(guild.guildId);
         const guildUnread = guild.channels.reduce(
           (sum, ch) => sum + (unreadCounts.get(ch.id) ?? 0),
-          0
+          0,
         );
 
         return (
@@ -94,7 +101,7 @@ export function ChannelTree({ channels, unreadCounts, selectedChannel, onSelect 
             <button
               type="button"
               onClick={() => toggleCollapse(guild.guildId)}
-              className="flex items-center justify-between w-full px-3 py-1 text-zinc-500 hover:text-zinc-300 transition-colors duration-150"
+              className="flex items-center justify-between w-full px-3 py-1 text-muted-foreground hover:text-muted-foreground transition-colors duration-150"
             >
               <span className="flex items-center gap-1">
                 {isCollapsed ? (
@@ -107,7 +114,7 @@ export function ChannelTree({ channels, unreadCounts, selectedChannel, onSelect 
                 </span>
               </span>
               {guildUnread > 0 && (
-                <span className="text-[10px] font-mono tabular-nums text-amber-400">
+                <span className="text-[10px] font-mono tabular-nums text-primary">
                   {guildUnread}
                 </span>
               )}
@@ -123,10 +130,10 @@ export function ChannelTree({ channels, unreadCounts, selectedChannel, onSelect 
                     type="button"
                     onClick={() => onSelect(ch.id)}
                     className={cn(
-                      'flex items-center justify-between w-full pl-7 pr-3 py-1 rounded-md transition-colors duration-150',
+                      "flex items-center justify-between w-full pl-7 pr-3 py-1 rounded-md transition-colors duration-150",
                       isActive
-                        ? 'bg-amber-500/15 text-amber-400 font-medium'
-                        : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-300'
+                        ? "bg-primary/15 text-primary font-medium"
+                        : "text-muted-foreground hover:bg-muted/50 hover:text-muted-foreground",
                     )}
                   >
                     <span className="flex items-center gap-1.5 truncate">
@@ -134,7 +141,7 @@ export function ChannelTree({ channels, unreadCounts, selectedChannel, onSelect 
                       <span className="truncate">{ch.name}</span>
                     </span>
                     {count > 0 && (
-                      <span className="text-[10px] font-mono tabular-nums bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded-full min-w-[20px] text-center shrink-0">
+                      <span className="text-[10px] font-mono tabular-nums bg-primary/20 text-primary px-1.5 py-0.5 rounded-full min-w-[20px] text-center shrink-0">
                         {count}
                       </span>
                     )}

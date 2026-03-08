@@ -1,7 +1,7 @@
-const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const LOWERCASE = 'abcdefghijklmnopqrstuvwxyz';
-const NUMBERS = '0123456789';
-const SYMBOLS = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+const UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
+const NUMBERS = "0123456789";
+const SYMBOLS = "!@#$%^&*()_+-=[]{}|;:,.<>?";
 
 interface GenerateOptions {
   uppercase?: boolean;
@@ -10,7 +10,10 @@ interface GenerateOptions {
   symbols?: boolean;
 }
 
-export function generatePassword(length = 16, options?: GenerateOptions): string {
+export function generatePassword(
+  length = 16,
+  options?: GenerateOptions,
+): string {
   const opts = {
     uppercase: true,
     lowercase: true,
@@ -19,7 +22,7 @@ export function generatePassword(length = 16, options?: GenerateOptions): string
     ...options,
   };
 
-  let charset = '';
+  let charset = "";
   if (opts.uppercase) charset += UPPERCASE;
   if (opts.lowercase) charset += LOWERCASE;
   if (opts.numbers) charset += NUMBERS;
@@ -30,7 +33,7 @@ export function generatePassword(length = 16, options?: GenerateOptions): string
   const array = new Uint32Array(length);
   crypto.getRandomValues(array);
 
-  let result = '';
+  let result = "";
   for (let i = 0; i < length; i++) {
     result += charset[array[i] % charset.length];
   }

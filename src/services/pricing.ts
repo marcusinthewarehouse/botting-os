@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { IS_TAURI } from '@/lib/db/client';
+import { IS_TAURI } from "@/lib/db/client";
 
 export interface ProductResult {
   id: string;
@@ -38,8 +38,11 @@ export interface EbayItemSummary {
   image: { image_url: string | null } | null;
 }
 
-async function tauriInvoke<T>(command: string, args: Record<string, unknown>): Promise<T> {
-  const { invoke } = await import('@tauri-apps/api/core');
+async function tauriInvoke<T>(
+  command: string,
+  args: Record<string, unknown>,
+): Promise<T> {
+  const { invoke } = await import("@tauri-apps/api/core");
   return invoke<T>(command, args);
 }
 
@@ -47,19 +50,28 @@ export const PricingService = {
   async searchProducts(query: string, limit = 10): Promise<ProductResult[]> {
     if (!IS_TAURI) return [];
     try {
-      return await tauriInvoke<ProductResult[]>('search_products', { query, limit });
+      return await tauriInvoke<ProductResult[]>("search_products", {
+        query,
+        limit,
+      });
     } catch (e) {
-      console.error('searchProducts failed:', e);
+      console.error("searchProducts failed:", e);
       return [];
     }
   },
 
-  async getProductPrices(styleId: string, source: string): Promise<PriceData | null> {
+  async getProductPrices(
+    styleId: string,
+    source: string,
+  ): Promise<PriceData | null> {
     if (!IS_TAURI) return null;
     try {
-      return await tauriInvoke<PriceData>('get_product_prices', { styleId, source });
+      return await tauriInvoke<PriceData>("get_product_prices", {
+        styleId,
+        source,
+      });
     } catch (e) {
-      console.error('getProductPrices failed:', e);
+      console.error("getProductPrices failed:", e);
       return null;
     }
   },
@@ -68,18 +80,18 @@ export const PricingService = {
     query: string,
     limit = 20,
     clientId?: string,
-    clientSecret?: string
+    clientSecret?: string,
   ): Promise<EbayItemSummary[]> {
     if (!IS_TAURI) return [];
     try {
-      return await tauriInvoke<EbayItemSummary[]>('search_ebay', {
+      return await tauriInvoke<EbayItemSummary[]>("search_ebay", {
         query,
         limit,
         clientId: clientId ?? null,
         clientSecret: clientSecret ?? null,
       });
     } catch (e) {
-      console.error('searchEbay failed:', e);
+      console.error("searchEbay failed:", e);
       return [];
     }
   },

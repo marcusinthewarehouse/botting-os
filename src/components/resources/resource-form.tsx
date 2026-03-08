@@ -1,53 +1,79 @@
-'use client';
+"use client";
 
-import { useCallback, useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { useCallback, useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 
 const CATEGORIES = [
-  'Getting Started',
-  'Bots',
-  'Proxies',
-  'Cook Groups',
-  'Marketplaces',
-  'Tools',
-  'Education',
-  'Other',
+  "Getting Started",
+  "Bots",
+  "Proxies",
+  "Cook Groups",
+  "Marketplaces",
+  "Tools",
+  "Education",
+  "Other",
 ] as const;
 
 interface ResourceFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: { name: string; url: string; description?: string; category: string }) => void;
-  initialValues?: { name?: string; url?: string; description?: string; category?: string };
+  onSubmit: (data: {
+    name: string;
+    url: string;
+    description?: string;
+    category: string;
+  }) => void;
+  initialValues?: {
+    name?: string;
+    url?: string;
+    description?: string;
+    category?: string;
+  };
   isEditing?: boolean;
 }
 
 function isValidUrl(value: string): boolean {
   try {
-    const url = new URL(value.startsWith('http') ? value : `https://${value}`);
-    return url.protocol === 'http:' || url.protocol === 'https:';
+    const url = new URL(value.startsWith("http") ? value : `https://${value}`);
+    return url.protocol === "http:" || url.protocol === "https:";
   } catch {
     return false;
   }
 }
 
-export function ResourceForm({ open, onOpenChange, onSubmit, initialValues, isEditing }: ResourceFormProps) {
-  const [name, setName] = useState(initialValues?.name ?? '');
-  const [url, setUrl] = useState(initialValues?.url ?? '');
-  const [description, setDescription] = useState(initialValues?.description ?? '');
-  const [category, setCategory] = useState(initialValues?.category ?? CATEGORIES[0]);
-  const [urlError, setUrlError] = useState('');
+export function ResourceForm({
+  open,
+  onOpenChange,
+  onSubmit,
+  initialValues,
+  isEditing,
+}: ResourceFormProps) {
+  const [name, setName] = useState(initialValues?.name ?? "");
+  const [url, setUrl] = useState(initialValues?.url ?? "");
+  const [description, setDescription] = useState(
+    initialValues?.description ?? "",
+  );
+  const [category, setCategory] = useState(
+    initialValues?.category ?? CATEGORIES[0],
+  );
+  const [urlError, setUrlError] = useState("");
 
   useEffect(() => {
     if (open) {
-      setName(initialValues?.name ?? '');
-      setUrl(initialValues?.url ?? '');
-      setDescription(initialValues?.description ?? '');
+      setName(initialValues?.name ?? "");
+      setUrl(initialValues?.url ?? "");
+      setDescription(initialValues?.description ?? "");
       setCategory(initialValues?.category ?? CATEGORIES[0]);
-      setUrlError('');
+      setUrlError("");
     }
   }, [open, initialValues]);
 
@@ -56,9 +82,9 @@ export function ResourceForm({ open, onOpenChange, onSubmit, initialValues, isEd
       e.preventDefault();
       if (!name.trim() || !url.trim()) return;
 
-      const normalizedUrl = url.startsWith('http') ? url : `https://${url}`;
+      const normalizedUrl = url.startsWith("http") ? url : `https://${url}`;
       if (!isValidUrl(normalizedUrl)) {
-        setUrlError('Please enter a valid URL');
+        setUrlError("Please enter a valid URL");
         return;
       }
 
@@ -70,73 +96,87 @@ export function ResourceForm({ open, onOpenChange, onSubmit, initialValues, isEd
       });
       onOpenChange(false);
     },
-    [name, url, description, category, onSubmit, onOpenChange]
+    [name, url, description, category, onSubmit, onOpenChange],
   );
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>{isEditing ? 'Edit Link' : 'Add Link'}</SheetTitle>
+          <SheetTitle>{isEditing ? "Edit Link" : "Add Link"}</SheetTitle>
           <SheetDescription>
-            {isEditing ? 'Update this resource link.' : 'Add a custom link to your resource hub.'}
+            {isEditing
+              ? "Update this resource link."
+              : "Add a custom link to your resource hub."}
           </SheetDescription>
         </SheetHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-6">
           <div className="space-y-2">
-            <Label className="text-zinc-400 text-xs">Name</Label>
+            <Label className="text-muted-foreground text-xs">Name</Label>
             <Input
               placeholder="Resource name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="bg-zinc-900 border-zinc-800"
+              className="bg-card border-border"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label className="text-zinc-400 text-xs">URL</Label>
+            <Label className="text-muted-foreground text-xs">URL</Label>
             <Input
               placeholder="https://example.com"
               value={url}
-              onChange={(e) => { setUrl(e.target.value); setUrlError(''); }}
-              className="bg-zinc-900 border-zinc-800"
+              onChange={(e) => {
+                setUrl(e.target.value);
+                setUrlError("");
+              }}
+              className="bg-card border-border"
               required
             />
             {urlError && <p className="text-xs text-red-400">{urlError}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label className="text-zinc-400 text-xs">Description (optional)</Label>
+            <Label className="text-muted-foreground text-xs">
+              Description (optional)
+            </Label>
             <textarea
               placeholder="Brief description..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              className="w-full rounded-md border border-zinc-800 bg-zinc-900 p-3 text-sm text-zinc-200 placeholder:text-zinc-600 resize-y outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50"
+              className="w-full rounded-md border border-border bg-card p-3 text-sm text-foreground/80 placeholder:text-muted-foreground resize-y outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50"
             />
           </div>
 
           <div className="space-y-2">
-            <Label className="text-zinc-400 text-xs">Category</Label>
+            <Label className="text-muted-foreground text-xs">Category</Label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50"
+              className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground/80 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50"
             >
               {CATEGORIES.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
               ))}
             </select>
           </div>
 
           <div className="flex gap-2 pt-4">
-            <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" className="flex-1">
-              {isEditing ? 'Save Changes' : 'Add Link'}
+              {isEditing ? "Save Changes" : "Add Link"}
             </Button>
           </div>
         </form>

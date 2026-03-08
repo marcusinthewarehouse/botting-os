@@ -1,6 +1,6 @@
-import { db } from '../client';
-import { settings } from '../schema';
-import { eq } from 'drizzle-orm';
+import { db } from "../client";
+import { settings } from "../schema";
+import { eq } from "drizzle-orm";
 
 export async function get(key: string): Promise<string | undefined> {
   const rows = await db.select().from(settings).where(eq(settings.key, key));

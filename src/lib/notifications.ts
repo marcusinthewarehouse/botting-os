@@ -1,11 +1,11 @@
-import { notificationsRepo } from '@/lib/db/repositories';
-import { IS_TAURI } from '@/lib/db/client';
+import { notificationsRepo } from "@/lib/db/repositories";
+import { IS_TAURI } from "@/lib/db/client";
 
 export type NotificationType =
-  | 'webhook_received'
-  | 'price_alert'
-  | 'drop_reminder'
-  | 'discord_keyword';
+  | "webhook_received"
+  | "price_alert"
+  | "drop_reminder"
+  | "discord_keyword";
 
 export interface CreateNotificationInput {
   type: NotificationType;
@@ -23,12 +23,12 @@ async function sendOsNotification(title: string, body: string) {
       isPermissionGranted,
       requestPermission,
       sendNotification: notify,
-    } = await import('@tauri-apps/plugin-notification');
+    } = await import("@tauri-apps/plugin-notification");
 
     let granted = await isPermissionGranted();
     if (!granted) {
       const permission = await requestPermission();
-      granted = permission === 'granted';
+      granted = permission === "granted";
     }
     if (granted) {
       notify({ title, body });
@@ -39,7 +39,7 @@ async function sendOsNotification(title: string, body: string) {
 }
 
 export async function createNotification(
-  input: CreateNotificationInput
+  input: CreateNotificationInput,
 ): Promise<void> {
   await notificationsRepo.create({
     type: input.type,

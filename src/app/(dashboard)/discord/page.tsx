@@ -1,38 +1,48 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MessageSquare, Radio, Settings2, Zap } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
-import { PageHeader } from '@/components/ui/page-header';
-import { PageTransition } from '@/components/page-transition';
-import { EmptyState } from '@/components/ui/empty-state';
-import { ChannelTree } from '@/components/discord/channel-tree';
-import { FilterBar, type FilterState } from '@/components/discord/filter-bar';
-import { MessageFeed, type DiscordMessage } from '@/components/discord/message-feed';
-import { DiscordService, type DiscordChannel } from '@/services/discord';
-import * as settingsRepo from '@/lib/db/repositories/settings';
-import { IS_TAURI } from '@/lib/db/client';
-import { cn } from '@/lib/utils';
-import Link from 'next/link';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { MessageSquare, Radio, Settings2, Zap } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PageHeader } from "@/components/ui/page-header";
+import { PageTransition } from "@/components/page-transition";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ChannelTree } from "@/components/discord/channel-tree";
+import { FilterBar, type FilterState } from "@/components/discord/filter-bar";
+import {
+  MessageFeed,
+  type DiscordMessage,
+} from "@/components/discord/message-feed";
+import { DiscordService, type DiscordChannel } from "@/services/discord";
+import * as settingsRepo from "@/lib/db/repositories/settings";
+import { IS_TAURI } from "@/lib/db/client";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const MAX_MESSAGES = 2000;
-const SESSION_KEY = 'bottingos:discord_messages';
+const SESSION_KEY = "bottingos:discord_messages";
 
 function loadSessionMessages(): DiscordMessage[] {
   try {
     const stored = sessionStorage.getItem(SESSION_KEY);
     if (stored) return JSON.parse(stored);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return [];
 }
 
 function saveSessionMessages(msgs: DiscordMessage[]) {
   try {
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(msgs.slice(-MAX_MESSAGES)));
-  } catch { /* ignore - storage full */ }
+    sessionStorage.setItem(
+      SESSION_KEY,
+      JSON.stringify(msgs.slice(-MAX_MESSAGES)),
+    );
+  } catch {
+    /* ignore - storage full */
+  }
 }
 
 interface StatusInfo {
@@ -41,12 +51,20 @@ interface StatusInfo {
 }
 
 export default function DiscordPage() {
-  const [messages, setMessages] = useState<DiscordMessage[]>(loadSessionMessages);
-  const [status, setStatus] = useState<StatusInfo>({ connected: false, message: 'Not connected' });
+  const [messages, setMessages] =
+    useState<DiscordMessage[]>(loadSessionMessages);
+  const [status, setStatus] = useState<StatusInfo>({
+    connected: false,
+    message: "Not connected",
+  });
   const [channels, setChannels] = useState<DiscordChannel[]>([]);
   const [keywords, setKeywords] = useState<string[]>([]);
   const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
-  const [filters, setFilters] = useState<FilterState>({ search: '', author: '', botOnly: false });
+  const [filters, setFilters] = useState<FilterState>({
+    search: "",
+    author: "",
+    botOnly: false,
+  });
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState(false);
   const unlistenMsgRef = useRef<(() => void) | null>(null);
@@ -108,21 +126,25 @@ export default function DiscordPage() {
       setLoading(true);
       try {
         const [kwJson, discordStatus] = await Promise.all([
-          settingsRepo.get('discord_keywords'),
+          settingsRepo.get("discord_keywords"),
           DiscordService.checkStatus(),
         ]);
 
         if (kwJson) {
-          try { setKeywords(JSON.parse(kwJson)); } catch { /* ignore */ }
+          try {
+            setKeywords(JSON.parse(kwJson));
+          } catch {
+            /* ignore */
+          }
         }
 
         if (discordStatus.cdp_connected) {
-          setStatus({ connected: true, message: 'Connected to Discord' });
+          setStatus({ connected: true, message: "Connected to Discord" });
           const chs = await DiscordService.getChannels();
           setChannels(chs);
         }
       } catch (e) {
-        console.error('Failed to initialize discord page:', e);
+        console.error("Failed to initialize discord page:", e);
       } finally {
         setLoading(false);
       }
@@ -135,30 +157,42 @@ export default function DiscordPage() {
     let cancelled = false;
 
     (async () => {
-      const { listen } = await import('@tauri-apps/api/event');
+      const { listen } = await import("@tauri-apps/api/event");
 
       if (cancelled) return;
 
-      const unMsg = await listen<DiscordMessage>('discord-message', (event) => {
+      const unMsg = await listen<DiscordMessage>("discord-message", (event) => {
         setMessages((prev) => {
           const next = [...prev, event.payload];
-          const trimmed = next.length > MAX_MESSAGES ? next.slice(next.length - MAX_MESSAGES) : next;
+          const trimmed =
+            next.length > MAX_MESSAGES
+              ? next.slice(next.length - MAX_MESSAGES)
+              : next;
           saveSessionMessages(trimmed);
           return trimmed;
         });
       });
 
-      if (cancelled) { unMsg(); return; }
+      if (cancelled) {
+        unMsg();
+        return;
+      }
       unlistenMsgRef.current = unMsg;
 
-      const unStatus = await listen<StatusInfo>('discord-status', (event) => {
+      const unStatus = await listen<StatusInfo>("discord-status", (event) => {
         setStatus(event.payload);
         if (event.payload.connected) {
-          DiscordService.getChannels().then((chs) => setChannels(chs)).catch(() => {});
+          DiscordService.getChannels()
+            .then((chs) => setChannels(chs))
+            .catch(() => {});
         }
       });
 
-      if (cancelled) { unStatus(); unMsg(); return; }
+      if (cancelled) {
+        unStatus();
+        unMsg();
+        return;
+      }
       unlistenStatusRef.current = unStatus;
     })();
 
@@ -176,19 +210,25 @@ export default function DiscordPage() {
     try {
       const s = await DiscordService.startCdp();
       if (s.cdp_connected) {
-        setStatus({ connected: true, message: 'Connected to Discord' });
+        setStatus({ connected: true, message: "Connected to Discord" });
         const chs = await DiscordService.getChannels();
         setChannels(chs);
 
-        const savedChannels = await settingsRepo.get('discord_monitored_channels');
+        const savedChannels = await settingsRepo.get(
+          "discord_monitored_channels",
+        );
         let channelIds: string[] = [];
         if (savedChannels) {
-          try { channelIds = JSON.parse(savedChannels); } catch { /* ignore */ }
+          try {
+            channelIds = JSON.parse(savedChannels);
+          } catch {
+            /* ignore */
+          }
         }
         await DiscordService.startCapture(channelIds);
       }
     } catch (e) {
-      console.error('Failed to connect:', e);
+      console.error("Failed to connect:", e);
     } finally {
       setConnecting(false);
     }
@@ -216,9 +256,9 @@ export default function DiscordPage() {
         description="Real-time message feed from monitored channels"
         actions={[
           {
-            label: 'Settings',
+            label: "Settings",
             onClick: () => {},
-            variant: 'outline' as const,
+            variant: "outline" as const,
             icon: <Settings2 className="size-4" />,
           },
         ]}
@@ -228,7 +268,7 @@ export default function DiscordPage() {
       <div className="absolute top-6 right-6">
         <Link
           href="/discord/settings"
-          className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150 border border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+          className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150 border border-border text-muted-foreground hover:bg-muted"
         >
           <Settings2 className="size-4" />
           Settings
@@ -237,17 +277,23 @@ export default function DiscordPage() {
 
       {/* Connection banner */}
       {!status.connected && (
-        <div className="mb-4 flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3">
+        <div className="mb-4 flex items-center justify-between rounded-lg border border-border bg-card/50 px-4 py-3">
           <div className="flex items-center gap-3">
-            <div className={cn(
-              'size-2 rounded-full',
-              status.message.includes('Reconnecting') ? 'bg-amber-400' : 'bg-red-400'
-            )} />
-            <span className="text-sm text-zinc-400">{status.message}</span>
+            <div
+              className={cn(
+                "size-2 rounded-full",
+                status.message.includes("Reconnecting")
+                  ? "bg-primary/90"
+                  : "bg-red-400",
+              )}
+            />
+            <span className="text-sm text-muted-foreground">
+              {status.message}
+            </span>
           </div>
           <Button size="sm" onClick={handleConnect} disabled={connecting}>
             <Zap className="size-3.5" data-icon="inline-start" />
-            {connecting ? 'Connecting...' : 'Connect'}
+            {connecting ? "Connecting..." : "Connect"}
           </Button>
         </div>
       )}
@@ -262,7 +308,7 @@ export default function DiscordPage() {
 
       <div className="flex gap-4 h-[calc(100vh-240px)] min-h-[400px]">
         {/* Channel tree sidebar */}
-        <div className="w-56 shrink-0 border border-zinc-800 rounded-lg bg-zinc-900/30 overflow-y-auto p-2">
+        <div className="w-56 shrink-0 border border-border rounded-lg bg-card/30 overflow-y-auto p-2">
           {channels.length > 0 ? (
             <ChannelTree
               channels={channels}
@@ -272,9 +318,12 @@ export default function DiscordPage() {
             />
           ) : (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <MessageSquare className="size-6 text-zinc-600 mb-2" />
-              <p className="text-xs text-zinc-500">No channels</p>
-              <Link href="/discord/settings" className="text-xs text-amber-500 hover:text-amber-400 mt-1">
+              <MessageSquare className="size-6 text-muted-foreground mb-2" />
+              <p className="text-xs text-muted-foreground">No channels</p>
+              <Link
+                href="/discord/settings"
+                className="text-xs text-primary hover:text-primary mt-1"
+              >
                 Configure
               </Link>
             </div>
@@ -282,8 +331,8 @@ export default function DiscordPage() {
         </div>
 
         {/* Main feed area */}
-        <div className="flex-1 flex flex-col min-w-0 border border-zinc-800 rounded-lg bg-zinc-900/30 overflow-hidden">
-          <div className="px-4 py-2 border-b border-zinc-800">
+        <div className="flex-1 flex flex-col min-w-0 border border-border rounded-lg bg-card/30 overflow-hidden">
+          <div className="px-4 py-2 border-b border-border">
             <FilterBar
               authors={authors}
               filters={filters}
@@ -299,7 +348,7 @@ export default function DiscordPage() {
                   title="Not connected"
                   description="Connect to Discord to start receiving messages in real-time."
                   action={{
-                    label: 'Connect Discord',
+                    label: "Connect Discord",
                     onClick: handleConnect,
                   }}
                 />

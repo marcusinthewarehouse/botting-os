@@ -1,6 +1,6 @@
 const migrations: { name: string; sql: string }[] = [
   {
-    name: '0001_initial',
+    name: "0001_initial",
     sql: `
       CREATE TABLE IF NOT EXISTS emails (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -96,7 +96,7 @@ const migrations: { name: string; sql: string }[] = [
     `,
   },
   {
-    name: '0002_price_alerts_v2',
+    name: "0002_price_alerts_v2",
     sql: `
       DROP TABLE IF EXISTS price_alerts;
       CREATE TABLE IF NOT EXISTS price_alerts (
@@ -118,7 +118,7 @@ const migrations: { name: string; sql: string }[] = [
     `,
   },
   {
-    name: '0003_notifications',
+    name: "0003_notifications",
     sql: `
       CREATE TABLE IF NOT EXISTS notifications (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -133,7 +133,7 @@ const migrations: { name: string; sql: string }[] = [
     `,
   },
   {
-    name: '0004_drops',
+    name: "0004_drops",
     sql: `
       CREATE TABLE IF NOT EXISTS drops (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -153,7 +153,7 @@ const migrations: { name: string; sql: string }[] = [
     `,
   },
   {
-    name: '0005_resources',
+    name: "0005_resources",
     sql: `
       CREATE TABLE IF NOT EXISTS resources (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -168,7 +168,7 @@ const migrations: { name: string; sql: string }[] = [
     `,
   },
   {
-    name: '0006_inventory_missing_columns',
+    name: "0006_inventory_missing_columns",
     sql: `
       ALTER TABLE inventory_items ADD COLUMN sku TEXT;
       ALTER TABLE inventory_items ADD COLUMN size TEXT;
@@ -180,7 +180,7 @@ const migrations: { name: string; sql: string }[] = [
 ];
 
 export async function runMigrations(): Promise<void> {
-  const { getSqlite } = await import('./client');
+  const { getSqlite } = await import("./client");
   const sqlite = await getSqlite();
 
   await sqlite.execute(`
@@ -192,7 +192,9 @@ export async function runMigrations(): Promise<void> {
   `);
 
   const applied = await sqlite
-    .select<{ name: string }[]>('SELECT name FROM __drizzle_migrations ORDER BY id')
+    .select<
+      { name: string }[]
+    >("SELECT name FROM __drizzle_migrations ORDER BY id")
     .catch(() => [] as { name: string }[]);
   const appliedNames = new Set(applied.map((r) => r.name));
 
@@ -201,7 +203,7 @@ export async function runMigrations(): Promise<void> {
 
     console.log(`Running migration: ${migration.name}`);
     const statements = migration.sql
-      .split(';')
+      .split(";")
       .map((s) => s.trim())
       .filter((s) => s.length > 0);
 
@@ -210,10 +212,10 @@ export async function runMigrations(): Promise<void> {
     }
 
     await sqlite.execute(
-      'INSERT INTO __drizzle_migrations (name, created_at) VALUES (?, ?)',
-      [migration.name, Date.now()]
+      "INSERT INTO __drizzle_migrations (name, created_at) VALUES (?, ?)",
+      [migration.name, Date.now()],
     );
   }
 
-  console.log('Migrations complete');
+  console.log("Migrations complete");
 }

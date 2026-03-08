@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { LockIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { LockIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface MasterPasswordDialogProps {
   isFirstTime: boolean;
@@ -23,9 +23,9 @@ export function MasterPasswordDialog({
   onSetPassword,
   onVerifyPassword,
 }: MasterPasswordDialogProps) {
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
-  const [error, setError] = useState('');
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState("");
   const [shaking, setShaking] = useState(false);
   const [loading, setLoading] = useState(false);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -47,32 +47,32 @@ export function MasterPasswordDialog({
 
     if (isFirstTime) {
       if (password.length < 8) {
-        triggerShake('Password must be at least 8 characters.');
+        triggerShake("Password must be at least 8 characters.");
         return;
       }
       if (password !== confirm) {
-        triggerShake('Passwords do not match.');
+        triggerShake("Passwords do not match.");
         return;
       }
       setLoading(true);
       try {
         await onSetPassword(password);
       } catch {
-        triggerShake('Failed to set password. Try again.');
+        triggerShake("Failed to set password. Try again.");
       } finally {
         setLoading(false);
       }
     } else {
       if (!password) {
-        triggerShake('Enter your master password.');
+        triggerShake("Enter your master password.");
         return;
       }
       setLoading(true);
       try {
         const ok = await onVerifyPassword(password);
-        if (!ok) triggerShake('Incorrect password.');
+        if (!ok) triggerShake("Incorrect password.");
       } catch {
-        triggerShake('Failed to verify password. Try again.');
+        triggerShake("Failed to verify password. Try again.");
       } finally {
         setLoading(false);
       }
@@ -91,81 +91,79 @@ export function MasterPasswordDialog({
     >
       <DialogContent
         showCloseButton={false}
-        className="max-w-sm bg-zinc-900 border border-white/[0.06] shadow-2xl"
+        className="max-w-sm bg-card border border-border shadow-lg"
       >
         <DialogHeader>
           <div className="flex items-center gap-2.5 mb-1">
-            <div className="flex items-center justify-center size-8 rounded-lg bg-amber-500/15">
-              <LockIcon className="size-4 text-amber-500" />
+            <div className="flex items-center justify-center size-8 rounded-lg bg-accent">
+              <LockIcon className="size-4 text-accent-foreground" />
             </div>
-            <DialogTitle className="text-base font-semibold text-zinc-50">
-              {isFirstTime ? 'Set Master Password' : 'Unlock BottingOS'}
+            <DialogTitle className="text-base font-semibold text-foreground">
+              {isFirstTime ? "Set Master Password" : "Unlock BottingOS"}
             </DialogTitle>
           </div>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-muted-foreground">
             {isFirstTime
-              ? 'Create a master password to encrypt your vault data.'
-              : 'Enter your master password to continue.'}
+              ? "Create a master password to encrypt your vault data."
+              : "Enter your master password to continue."}
           </p>
         </DialogHeader>
 
         <form
           onSubmit={handleSubmit}
           className={cn(
-            'flex flex-col gap-3 transition-transform',
-            shaking && 'animate-shake'
+            "flex flex-col gap-3 transition-transform",
+            shaking && "animate-shake",
           )}
         >
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-zinc-400 font-medium">
-              {isFirstTime ? 'New password' : 'Master password'}
+            <label className="text-xs text-muted-foreground font-medium">
+              {isFirstTime ? "New password" : "Master password"}
             </label>
             <Input
               ref={passwordRef}
               type="password"
               value={password}
-              onChange={e => {
+              onChange={(e) => {
                 setPassword(e.target.value);
-                setError('');
+                setError("");
               }}
-              placeholder={isFirstTime ? 'Min. 8 characters' : 'Enter password'}
-              className="bg-zinc-800 border-white/[0.06] focus-visible:border-amber-500/50 focus-visible:ring-amber-500/20 text-zinc-50 placeholder:text-zinc-600"
-              autoComplete={isFirstTime ? 'new-password' : 'current-password'}
+              placeholder={isFirstTime ? "Min. 8 characters" : "Enter password"}
+              autoComplete={isFirstTime ? "new-password" : "current-password"}
               disabled={loading}
             />
           </div>
 
           {isFirstTime && (
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-zinc-400 font-medium">Confirm password</label>
+              <label className="text-xs text-muted-foreground font-medium">
+                Confirm password
+              </label>
               <Input
                 type="password"
                 value={confirm}
-                onChange={e => {
+                onChange={(e) => {
                   setConfirm(e.target.value);
-                  setError('');
+                  setError("");
                 }}
                 placeholder="Re-enter password"
-                className="bg-zinc-800 border-white/[0.06] focus-visible:border-amber-500/50 focus-visible:ring-amber-500/20 text-zinc-50 placeholder:text-zinc-600"
                 autoComplete="new-password"
                 disabled={loading}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') handleSubmit();
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSubmit();
                 }}
               />
             </div>
           )}
 
-          {error && (
-            <p className="text-xs text-red-400">{error}</p>
-          )}
+          {error && <p className="text-xs text-destructive">{error}</p>}
 
-          <Button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-medium active:scale-[0.97] transition-all duration-150"
-          >
-            {loading ? 'Please wait...' : isFirstTime ? 'Set Password' : 'Unlock'}
+          <Button type="submit" disabled={loading} className="w-full">
+            {loading
+              ? "Please wait..."
+              : isFirstTime
+                ? "Set Password"
+                : "Unlock"}
           </Button>
         </form>
       </DialogContent>

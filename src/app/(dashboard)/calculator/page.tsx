@@ -1,38 +1,51 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Bell, Calculator, Settings2 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { PageHeader } from '@/components/ui/page-header';
-import { PageTransition } from '@/components/page-transition';
-import { EmptyState } from '@/components/ui/empty-state';
-import { TableSkeleton } from '@/components/skeletons/table-skeleton';
-import { ProductSearch } from '@/components/calculator/product-search';
-import { PriceComparison, type MarketplacePrices } from '@/components/calculator/price-comparison';
-import { FeeDetails } from '@/components/calculator/fee-details';
-import { HistoryList } from '@/components/calculator/history-list';
-import { PriceAlertDialog } from '@/components/calculator/price-alert-dialog';
-import { calculatorRepo } from '@/lib/db/repositories';
-import { getDefaultFeeOptions, calculateFlip, type FeeOptions, type Marketplace } from '@/lib/fees';
-import type { CalculatorHistory } from '@/lib/db/types';
-import type { ProductResult } from '@/services/pricing';
-import { IS_TAURI } from '@/lib/db/client';
-import { cn } from '@/lib/utils';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Bell, Calculator, Settings2 } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { PageHeader } from "@/components/ui/page-header";
+import { PageTransition } from "@/components/page-transition";
+import { EmptyState } from "@/components/ui/empty-state";
+import { TableSkeleton } from "@/components/skeletons/table-skeleton";
+import { ProductSearch } from "@/components/calculator/product-search";
+import {
+  PriceComparison,
+  type MarketplacePrices,
+} from "@/components/calculator/price-comparison";
+import { FeeDetails } from "@/components/calculator/fee-details";
+import { HistoryList } from "@/components/calculator/history-list";
+import { PriceAlertDialog } from "@/components/calculator/price-alert-dialog";
+import { calculatorRepo } from "@/lib/db/repositories";
+import {
+  getDefaultFeeOptions,
+  calculateFlip,
+  type FeeOptions,
+  type Marketplace,
+} from "@/lib/fees";
+import type { CalculatorHistory } from "@/lib/db/types";
+import type { ProductResult } from "@/services/pricing";
+import { IS_TAURI } from "@/lib/db/client";
+import { cn } from "@/lib/utils";
 
 export default function CalculatorPage() {
-  const [selectedProduct, setSelectedProduct] = useState<ProductResult | null>(null);
-  const [purchasePrice, setPurchasePrice] = useState('');
-  const [selectedSize, setSelectedSize] = useState('');
-  const [marketplacePrices, setMarketplacePrices] = useState<MarketplacePrices>({
-    stockx: 0,
-    goat: 0,
-    ebay: 0,
-  });
-  const [feeOptions, setFeeOptions] = useState<FeeOptions>(getDefaultFeeOptions);
+  const [selectedProduct, setSelectedProduct] = useState<ProductResult | null>(
+    null,
+  );
+  const [purchasePrice, setPurchasePrice] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
+  const [marketplacePrices, setMarketplacePrices] = useState<MarketplacePrices>(
+    {
+      stockx: 0,
+      goat: 0,
+      ebay: 0,
+    },
+  );
+  const [feeOptions, setFeeOptions] =
+    useState<FeeOptions>(getDefaultFeeOptions);
   const [showSettings, setShowSettings] = useState(false);
   const [showAlertDialog, setShowAlertDialog] = useState(false);
   const [history, setHistory] = useState<CalculatorHistory[]>([]);
@@ -71,7 +84,7 @@ export default function CalculatorPage() {
 
   const handleProductSelect = useCallback((product: ProductResult) => {
     setSelectedProduct(product);
-    setSelectedSize('');
+    setSelectedSize("");
   }, []);
 
   const handlePricesLoaded = useCallback((prices: MarketplacePrices) => {
@@ -82,13 +95,13 @@ export default function CalculatorPage() {
     if (!purchase || !hasAnyPrice) return;
     const results = calculateFlip(purchase, salePrices, feeOptions);
     const resultsJson = JSON.stringify({
-      ebay: results.find((r) => r.marketplace === 'ebay') ?? null,
-      stockx: results.find((r) => r.marketplace === 'stockx') ?? null,
-      goat: results.find((r) => r.marketplace === 'goat') ?? null,
+      ebay: results.find((r) => r.marketplace === "ebay") ?? null,
+      stockx: results.find((r) => r.marketplace === "stockx") ?? null,
+      goat: results.find((r) => r.marketplace === "goat") ?? null,
     });
     try {
       await calculatorRepo.create({
-        productName: selectedProduct?.name || 'Manual Calculation',
+        productName: selectedProduct?.name || "Manual Calculation",
         sku: selectedProduct?.style_id || null,
         purchasePrice: purchase,
         resultsJson,
@@ -97,19 +110,29 @@ export default function CalculatorPage() {
     } catch {
       // DB not available
     }
-  }, [selectedProduct, purchase, salePrices, feeOptions, hasAnyPrice, loadHistory]);
+  }, [
+    selectedProduct,
+    purchase,
+    salePrices,
+    feeOptions,
+    hasAnyPrice,
+    loadHistory,
+  ]);
 
   const handleClear = useCallback(() => {
     setSelectedProduct(null);
-    setPurchasePrice('');
-    setSelectedSize('');
+    setPurchasePrice("");
+    setSelectedSize("");
     setMarketplacePrices({ stockx: 0, goat: 0, ebay: 0 });
   }, []);
 
   const handleSelectHistory = useCallback((entry: CalculatorHistory) => {
     setPurchasePrice(String(entry.purchasePrice));
     try {
-      const results = JSON.parse(entry.resultsJson) as Record<string, { salePrice?: number } | null>;
+      const results = JSON.parse(entry.resultsJson) as Record<
+        string,
+        { salePrice?: number } | null
+      >;
       setMarketplacePrices({
         stockx: results.stockx?.salePrice ?? 0,
         goat: results.goat?.salePrice ?? 0,
@@ -129,7 +152,7 @@ export default function CalculatorPage() {
         // DB not available
       }
     },
-    [loadHistory]
+    [loadHistory],
   );
 
   return (
@@ -138,9 +161,13 @@ export default function CalculatorPage() {
         title="Flip Calculator"
         description="Search products, compare marketplace prices, and calculate profit."
         actions={[
-          { label: 'Alerts', onClick: () => setShowAlertDialog(true), variant: 'outline' },
-          { label: 'Clear', onClick: handleClear, variant: 'outline' },
-          { label: 'Save', onClick: handleSave },
+          {
+            label: "Alerts",
+            onClick: () => setShowAlertDialog(true),
+            variant: "outline",
+          },
+          { label: "Clear", onClick: handleClear, variant: "outline" },
+          { label: "Save", onClick: handleSave },
         ]}
       />
 
@@ -150,24 +177,30 @@ export default function CalculatorPage() {
 
         {/* Selected Product Info */}
         {selectedProduct && (
-          <Card className="p-4 bg-black border-white/[0.06]">
+          <Card className="p-4 bg-black border-border">
             <div className="flex items-center gap-4">
               {selectedProduct.thumbnail ? (
                 <img
                   src={selectedProduct.thumbnail}
                   alt=""
-                  className="size-16 rounded-lg object-cover bg-zinc-800 shrink-0"
+                  className="size-16 rounded-lg object-cover bg-muted shrink-0"
                 />
               ) : (
-                <div className="size-16 rounded-lg bg-zinc-800 shrink-0" />
+                <div className="size-16 rounded-lg bg-muted shrink-0" />
               )}
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-zinc-50 truncate">{selectedProduct.name}</p>
-                <div className="flex items-center gap-3 text-xs text-zinc-500 mt-0.5">
+                <p className="text-sm font-medium text-foreground truncate">
+                  {selectedProduct.name}
+                </p>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
                   {selectedProduct.style_id && (
-                    <span className="font-mono">{selectedProduct.style_id}</span>
+                    <span className="font-mono">
+                      {selectedProduct.style_id}
+                    </span>
                   )}
-                  {selectedProduct.brand && <span>{selectedProduct.brand}</span>}
+                  {selectedProduct.brand && (
+                    <span>{selectedProduct.brand}</span>
+                  )}
                   {selectedProduct.retail_price > 0 && (
                     <span className="font-mono tabular-nums">
                       ${selectedProduct.retail_price.toFixed(0)} retail
@@ -182,11 +215,16 @@ export default function CalculatorPage() {
         {/* Purchase Price + Settings Toggle */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           <div className="lg:col-span-3">
-            <Label htmlFor="purchase-price" className="text-zinc-400 text-xs">
+            <Label
+              htmlFor="purchase-price"
+              className="text-muted-foreground text-xs"
+            >
               Purchase Price (Cost Basis)
             </Label>
             <div className="relative mt-1">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                $
+              </span>
               <Input
                 id="purchase-price"
                 type="number"
@@ -195,7 +233,7 @@ export default function CalculatorPage() {
                 placeholder="0.00"
                 value={purchasePrice}
                 onChange={(e) => setPurchasePrice(e.target.value)}
-                className="bg-zinc-900 border-zinc-800 pl-7 font-mono tabular-nums"
+                className="bg-card border-border pl-7 font-mono tabular-nums"
               />
             </div>
           </div>
@@ -245,7 +283,9 @@ export default function CalculatorPage() {
 
         {/* History */}
         <div>
-          <h2 className="text-sm font-medium text-zinc-400 mb-3">Recent Calculations</h2>
+          <h2 className="text-sm font-medium text-muted-foreground mb-3">
+            Recent Calculations
+          </h2>
           {!historyLoaded ? (
             <TableSkeleton rows={3} columns={3} />
           ) : (
@@ -264,7 +304,11 @@ export default function CalculatorPage() {
         productName={selectedProduct?.name}
         styleId={selectedProduct?.style_id}
         marketplace="stockx"
-        currentPrice={marketplacePrices.stockx || marketplacePrices.goat || marketplacePrices.ebay}
+        currentPrice={
+          marketplacePrices.stockx ||
+          marketplacePrices.goat ||
+          marketplacePrices.ebay
+        }
         size={selectedSize || undefined}
         imageUrl={selectedProduct?.thumbnail}
       />
@@ -281,23 +325,33 @@ function FeeSettingsPanel({
   onChange: (opts: FeeOptions) => void;
 }) {
   const selectClass =
-    'w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50';
+    "w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground/80 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50";
 
   return (
-    <Card className="p-5 bg-black border-white/[0.06]">
-      <p className="text-sm font-medium text-zinc-50 mb-4">Fee Configuration</p>
+    <Card className="p-5 bg-black border-border">
+      <p className="text-sm font-medium text-foreground mb-4">
+        Fee Configuration
+      </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* eBay */}
         <div className="space-y-3">
-          <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">eBay</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            eBay
+          </p>
           <div className="space-y-1.5">
-            <Label className="text-zinc-500 text-xs">Category</Label>
+            <Label className="text-muted-foreground text-xs">Category</Label>
             <select
-              value={feeOptions.ebay?.category ?? 'sneakers'}
+              value={feeOptions.ebay?.category ?? "sneakers"}
               onChange={(e) =>
                 onChange({
                   ...feeOptions,
-                  ebay: { ...feeOptions.ebay!, category: e.target.value as 'sneakers' | 'general' | 'books_media' },
+                  ebay: {
+                    ...feeOptions.ebay!,
+                    category: e.target.value as
+                      | "sneakers"
+                      | "general"
+                      | "books_media",
+                  },
                 })
               }
               className={selectClass}
@@ -318,9 +372,12 @@ function FeeSettingsPanel({
                   ebay: { ...feeOptions.ebay!, hasStore: e.target.checked },
                 })
               }
-              className="rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-amber-500/50"
+              className="rounded border-border bg-card text-primary focus:ring-primary/50"
             />
-            <Label htmlFor="ebay-store" className="text-zinc-400 text-xs">
+            <Label
+              htmlFor="ebay-store"
+              className="text-muted-foreground text-xs"
+            >
               eBay Store
             </Label>
           </div>
@@ -328,15 +385,22 @@ function FeeSettingsPanel({
 
         {/* StockX */}
         <div className="space-y-3">
-          <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">StockX</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            StockX
+          </p>
           <div className="space-y-1.5">
-            <Label className="text-zinc-500 text-xs">Seller Level</Label>
+            <Label className="text-muted-foreground text-xs">
+              Seller Level
+            </Label>
             <select
               value={feeOptions.stockx?.sellerLevel ?? 1}
               onChange={(e) =>
                 onChange({
                   ...feeOptions,
-                  stockx: { ...feeOptions.stockx!, sellerLevel: parseInt(e.target.value) as 1 | 2 | 3 | 4 | 5 },
+                  stockx: {
+                    ...feeOptions.stockx!,
+                    sellerLevel: parseInt(e.target.value) as 1 | 2 | 3 | 4 | 5,
+                  },
                 })
               }
               className={selectClass}
@@ -350,9 +414,21 @@ function FeeSettingsPanel({
           </div>
           <div className="space-y-2">
             {[
-              { id: 'stockx-qs', label: 'Quick Ship', key: 'hasQuickShip' as const },
-              { id: 'stockx-ss', label: 'Successful Ship', key: 'hasSuccessfulShip' as const },
-              { id: 'stockx-pp', label: 'Processing Waived', key: 'paymentProcessingWaived' as const },
+              {
+                id: "stockx-qs",
+                label: "Quick Ship",
+                key: "hasQuickShip" as const,
+              },
+              {
+                id: "stockx-ss",
+                label: "Successful Ship",
+                key: "hasSuccessfulShip" as const,
+              },
+              {
+                id: "stockx-pp",
+                label: "Processing Waived",
+                key: "paymentProcessingWaived" as const,
+              },
             ].map(({ id, label, key }) => (
               <div key={id} className="flex items-center gap-2">
                 <input
@@ -362,12 +438,15 @@ function FeeSettingsPanel({
                   onChange={(e) =>
                     onChange({
                       ...feeOptions,
-                      stockx: { ...feeOptions.stockx!, [key]: e.target.checked },
+                      stockx: {
+                        ...feeOptions.stockx!,
+                        [key]: e.target.checked,
+                      },
                     })
                   }
-                  className="rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-amber-500/50"
+                  className="rounded border-border bg-card text-primary focus:ring-primary/50"
                 />
-                <Label htmlFor={id} className="text-zinc-400 text-xs">
+                <Label htmlFor={id} className="text-muted-foreground text-xs">
                   {label}
                 </Label>
               </div>
@@ -377,9 +456,13 @@ function FeeSettingsPanel({
 
         {/* GOAT */}
         <div className="space-y-3">
-          <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">GOAT</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            GOAT
+          </p>
           <div className="space-y-1.5">
-            <Label className="text-zinc-500 text-xs">Seller Rating</Label>
+            <Label className="text-muted-foreground text-xs">
+              Seller Rating
+            </Label>
             <Input
               type="number"
               min="0"
@@ -388,10 +471,13 @@ function FeeSettingsPanel({
               onChange={(e) =>
                 onChange({
                   ...feeOptions,
-                  goat: { ...feeOptions.goat!, sellerRating: parseInt(e.target.value) || 90 },
+                  goat: {
+                    ...feeOptions.goat!,
+                    sellerRating: parseInt(e.target.value) || 90,
+                  },
                 })
               }
-              className="bg-zinc-900 border-zinc-800 font-mono tabular-nums"
+              className="bg-card border-border font-mono tabular-nums"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -405,9 +491,9 @@ function FeeSettingsPanel({
                   goat: { ...feeOptions.goat!, isCanadian: e.target.checked },
                 })
               }
-              className="rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-amber-500/50"
+              className="rounded border-border bg-card text-primary focus:ring-primary/50"
             />
-            <Label htmlFor="goat-ca" className="text-zinc-400 text-xs">
+            <Label htmlFor="goat-ca" className="text-muted-foreground text-xs">
               Canadian Seller
             </Label>
           </div>

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { X } from 'lucide-react';
+import { useState } from "react";
+import { X } from "lucide-react";
 
 interface AddItemFormProps {
   open: boolean;
@@ -23,35 +23,37 @@ export interface AddItemData {
   listedPrice?: number;
 }
 
-const CATEGORIES = ['sneakers', 'pokemon', 'funko', 'supreme', 'other'];
-const CONDITIONS = ['new', 'used', 'open_box'];
+const CATEGORIES = ["sneakers", "pokemon", "funko", "supreme", "other"];
+const CONDITIONS = ["new", "used", "open_box"];
 
-const inputClass = 'w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-50 placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-amber-500/50';
-const selectClass = 'w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:ring-1 focus:ring-amber-500/50';
+const inputClass =
+  "w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50";
+const selectClass =
+  "w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50";
 
 export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
-  const [name, setName] = useState('');
-  const [category, setCategory] = useState('sneakers');
-  const [purchasePrice, setPurchasePrice] = useState('');
-  const [condition, setCondition] = useState('new');
-  const [sku, setSku] = useState('');
-  const [size, setSize] = useState('');
-  const [location, setLocation] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
-  const [notes, setNotes] = useState('');
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("sneakers");
+  const [purchasePrice, setPurchasePrice] = useState("");
+  const [condition, setCondition] = useState("new");
+  const [sku, setSku] = useState("");
+  const [size, setSize] = useState("");
+  const [location, setLocation] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [notes, setNotes] = useState("");
 
   if (!open) return null;
 
   function resetForm() {
-    setName('');
-    setCategory('sneakers');
-    setPurchasePrice('');
-    setCondition('new');
-    setSku('');
-    setSize('');
-    setLocation('');
-    setImageUrl('');
-    setNotes('');
+    setName("");
+    setCategory("sneakers");
+    setPurchasePrice("");
+    setCondition("new");
+    setSku("");
+    setSize("");
+    setLocation("");
+    setImageUrl("");
+    setNotes("");
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -77,17 +79,24 @@ export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-950 p-6 shadow-lg">
+      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-lg border border-border bg-background p-6 shadow-lg">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-zinc-50">Add Inventory Item</h2>
-          <button onClick={onClose} className="text-zinc-500 hover:text-zinc-300 transition-colors">
+          <h2 className="text-lg font-semibold text-foreground">
+            Add Inventory Item
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-muted-foreground hover:text-muted-foreground transition-colors"
+          >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs text-zinc-500 mb-1">Product Name *</label>
+            <label className="block text-xs text-muted-foreground mb-1">
+              Product Name *
+            </label>
             <input
               type="text"
               value={name}
@@ -100,7 +109,9 @@ export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-zinc-500 mb-1">SKU</label>
+              <label className="block text-xs text-muted-foreground mb-1">
+                SKU
+              </label>
               <input
                 type="text"
                 value={sku}
@@ -110,7 +121,9 @@ export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
               />
             </div>
             <div>
-              <label className="block text-xs text-zinc-500 mb-1">Size</label>
+              <label className="block text-xs text-muted-foreground mb-1">
+                Size
+              </label>
               <input
                 type="text"
                 value={size}
@@ -123,7 +136,9 @@ export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-zinc-500 mb-1">Category</label>
+              <label className="block text-xs text-muted-foreground mb-1">
+                Category
+              </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
@@ -131,16 +146,22 @@ export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
               >
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
-                    {c === 'funko' ? 'Funko Pops' : c.charAt(0).toUpperCase() + c.slice(1)}
+                    {c === "funko"
+                      ? "Funko Pops"
+                      : c.charAt(0).toUpperCase() + c.slice(1)}
                   </option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="block text-xs text-zinc-500 mb-1">Purchase Price *</label>
+              <label className="block text-xs text-muted-foreground mb-1">
+                Purchase Price *
+              </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500">$</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                  $
+                </span>
                 <input
                   type="number"
                   step="0.01"
@@ -148,7 +169,7 @@ export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
                   value={purchasePrice}
                   onChange={(e) => setPurchasePrice(e.target.value)}
                   placeholder="0.00"
-                  className="w-full rounded-md border border-zinc-800 bg-zinc-900 pl-7 pr-3 py-2 text-sm text-zinc-50 font-mono tabular-nums placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-amber-500/50"
+                  className="w-full rounded-md border border-border bg-card pl-7 pr-3 py-2 text-sm text-foreground font-mono tabular-nums placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
                   required
                 />
               </div>
@@ -157,7 +178,9 @@ export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-zinc-500 mb-1">Condition</label>
+              <label className="block text-xs text-muted-foreground mb-1">
+                Condition
+              </label>
               <select
                 value={condition}
                 onChange={(e) => setCondition(e.target.value)}
@@ -165,14 +188,18 @@ export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
               >
                 {CONDITIONS.map((c) => (
                   <option key={c} value={c}>
-                    {c === 'open_box' ? 'Open Box' : c.charAt(0).toUpperCase() + c.slice(1)}
+                    {c === "open_box"
+                      ? "Open Box"
+                      : c.charAt(0).toUpperCase() + c.slice(1)}
                   </option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="block text-xs text-zinc-500 mb-1">Location</label>
+              <label className="block text-xs text-muted-foreground mb-1">
+                Location
+              </label>
               <input
                 type="text"
                 value={location}
@@ -184,7 +211,9 @@ export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
           </div>
 
           <div>
-            <label className="block text-xs text-zinc-500 mb-1">Image URL</label>
+            <label className="block text-xs text-muted-foreground mb-1">
+              Image URL
+            </label>
             <input
               type="url"
               value={imageUrl}
@@ -195,13 +224,15 @@ export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
           </div>
 
           <div>
-            <label className="block text-xs text-zinc-500 mb-1">Notes</label>
+            <label className="block text-xs text-muted-foreground mb-1">
+              Notes
+            </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any additional details..."
               rows={2}
-              className={inputClass + ' resize-none'}
+              className={inputClass + " resize-none"}
             />
           </div>
 
@@ -209,13 +240,13 @@ export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-md border border-zinc-800 py-2 text-sm text-zinc-400 hover:bg-zinc-900 transition-colors"
+              className="flex-1 rounded-md border border-border py-2 text-sm text-muted-foreground hover:bg-card transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 rounded-md bg-amber-500 py-2 text-sm font-medium text-zinc-950 hover:bg-amber-400 transition-colors"
+              className="flex-1 rounded-md bg-primary py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
             >
               Add Item
             </button>

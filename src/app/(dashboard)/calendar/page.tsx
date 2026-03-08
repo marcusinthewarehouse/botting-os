@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CalendarDays, List, Plus } from 'lucide-react';
-import { PageHeader } from '@/components/ui/page-header';
-import { PageTransition } from '@/components/page-transition';
-import { EmptyState } from '@/components/ui/empty-state';
-import { CalendarSkeleton } from '@/components/skeletons/calendar-skeleton';
-import { Card } from '@/components/ui/card';
-import { MonthView } from '@/components/calendar/month-view';
-import { ListView } from '@/components/calendar/list-view';
-import { DropForm } from '@/components/calendar/drop-form';
-import type { DropFormData } from '@/components/calendar/drop-form';
-import { dropsRepo } from '@/lib/db/repositories';
-import { IS_TAURI } from '@/lib/db/client';
-import type { Drop } from '@/lib/db/types';
-import { cn } from '@/lib/utils';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { CalendarDays, List, Plus } from "lucide-react";
+import { PageHeader } from "@/components/ui/page-header";
+import { PageTransition } from "@/components/page-transition";
+import { EmptyState } from "@/components/ui/empty-state";
+import { CalendarSkeleton } from "@/components/skeletons/calendar-skeleton";
+import { Card } from "@/components/ui/card";
+import { MonthView } from "@/components/calendar/month-view";
+import { ListView } from "@/components/calendar/list-view";
+import { DropForm } from "@/components/calendar/drop-form";
+import type { DropFormData } from "@/components/calendar/drop-form";
+import { dropsRepo } from "@/lib/db/repositories";
+import { IS_TAURI } from "@/lib/db/client";
+import type { Drop } from "@/lib/db/types";
+import { cn } from "@/lib/utils";
 
-type ViewMode = 'month' | 'list';
+type ViewMode = "month" | "list";
 
 export default function CalendarPage() {
   const [drops, setDrops] = useState<Drop[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>('month');
+  const [viewMode, setViewMode] = useState<ViewMode>("month");
   const [formOpen, setFormOpen] = useState(false);
   const [editDrop, setEditDrop] = useState<Drop | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -111,7 +111,7 @@ export default function CalendarPage() {
             notes: data.notes || null,
             reminderMinutes: data.reminderMinutes,
             reminded: false,
-            source: 'manual',
+            source: "manual",
           });
         }
         await loadDrops();
@@ -119,7 +119,7 @@ export default function CalendarPage() {
         // DB not available
       }
     },
-    [editDrop, loadDrops]
+    [editDrop, loadDrops],
   );
 
   const handleDelete = useCallback(async () => {
@@ -152,7 +152,7 @@ export default function CalendarPage() {
         title="Drop Calendar"
         actions={[
           {
-            label: 'Add Drop',
+            label: "Add Drop",
             onClick: handleAddClick,
             icon: <Plus className="size-4" />,
           },
@@ -160,26 +160,26 @@ export default function CalendarPage() {
       />
 
       {/* View toggle */}
-      <div className="flex items-center gap-1 mb-4 p-1 bg-zinc-900 rounded-lg w-fit border border-white/[0.06]">
+      <div className="flex items-center gap-1 mb-4 p-1 bg-card rounded-lg w-fit border border-border">
         <button
-          onClick={() => setViewMode('month')}
+          onClick={() => setViewMode("month")}
           className={cn(
-            'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150',
-            viewMode === 'month'
-              ? 'bg-zinc-800 text-zinc-50'
-              : 'text-zinc-500 hover:text-zinc-300'
+            "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150",
+            viewMode === "month"
+              ? "bg-muted text-foreground"
+              : "text-muted-foreground hover:text-muted-foreground",
           )}
         >
           <CalendarDays className="size-3.5" />
           Month
         </button>
         <button
-          onClick={() => setViewMode('list')}
+          onClick={() => setViewMode("list")}
           className={cn(
-            'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150',
-            viewMode === 'list'
-              ? 'bg-zinc-800 text-zinc-50'
-              : 'text-zinc-500 hover:text-zinc-300'
+            "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150",
+            viewMode === "list"
+              ? "bg-muted text-foreground"
+              : "text-muted-foreground hover:text-muted-foreground",
           )}
         >
           <List className="size-3.5" />
@@ -190,17 +190,17 @@ export default function CalendarPage() {
       {!loaded ? (
         <CalendarSkeleton />
       ) : drops.length === 0 ? (
-        <Card className="bg-black border-white/[0.06]">
+        <Card className="bg-black border-border">
           <EmptyState
             icon={CalendarDays}
             title="No drops yet"
             description="Add your first product drop to start tracking upcoming releases."
-            action={{ label: 'Add Drop', onClick: handleAddClick }}
+            action={{ label: "Add Drop", onClick: handleAddClick }}
           />
         </Card>
-      ) : viewMode === 'month' ? (
+      ) : viewMode === "month" ? (
         <div className="space-y-4">
-          <Card className="bg-black border-white/[0.06] p-4">
+          <Card className="bg-black border-border p-4">
             <MonthView
               year={year}
               month={month}
@@ -214,24 +214,29 @@ export default function CalendarPage() {
           </Card>
 
           {selectedDate && (
-            <Card className="bg-black border-white/[0.06] p-4">
-              <h3 className="text-sm font-medium text-zinc-400 mb-3">
-                {selectedDate.toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  month: 'long',
-                  day: 'numeric',
+            <Card className="bg-black border-border p-4">
+              <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                {selectedDate.toLocaleDateString("en-US", {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
                 })}
               </h3>
               {selectedDayDrops.length === 0 ? (
-                <p className="text-sm text-zinc-600">No drops on this day.</p>
+                <p className="text-sm text-muted-foreground">
+                  No drops on this day.
+                </p>
               ) : (
-                <ListView drops={selectedDayDrops} onDropClick={handleDropClick} />
+                <ListView
+                  drops={selectedDayDrops}
+                  onDropClick={handleDropClick}
+                />
               )}
             </Card>
           )}
         </div>
       ) : (
-        <Card className="bg-black border-white/[0.06] p-4">
+        <Card className="bg-black border-border p-4">
           <ListView drops={drops} onDropClick={handleDropClick} />
         </Card>
       )}

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
+import { useState, useEffect, useRef, useCallback } from "react";
+import { supabase } from "@/lib/supabase";
 
 export interface CheckoutEvent {
   id: string;
@@ -30,7 +30,10 @@ interface UseCheckoutFeedOptions {
   onNewEvent?: (event: CheckoutEvent) => void;
 }
 
-export function useCheckoutFeed(userId: string | null, options?: UseCheckoutFeedOptions) {
+export function useCheckoutFeed(
+  userId: string | null,
+  options?: UseCheckoutFeedOptions,
+) {
   const [events, setEvents] = useState<CheckoutEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const onNewEventRef = useRef(options?.onNewEvent);
@@ -46,10 +49,10 @@ export function useCheckoutFeed(userId: string | null, options?: UseCheckoutFeed
 
     async function fetchExisting() {
       const { data, error } = await supabase
-        .from('checkout_events')
-        .select('*')
-        .eq('user_id', userId)
-        .order('received_at', { ascending: false })
+        .from("checkout_events")
+        .select("*")
+        .eq("user_id", userId)
+        .order("received_at", { ascending: false })
         .limit(500);
 
       if (!cancelled) {
@@ -65,11 +68,11 @@ export function useCheckoutFeed(userId: string | null, options?: UseCheckoutFeed
     const channel = supabase
       .channel(`checkouts-${userId}`)
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'checkout_events',
+          event: "INSERT",
+          schema: "public",
+          table: "checkout_events",
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
@@ -78,7 +81,7 @@ export function useCheckoutFeed(userId: string | null, options?: UseCheckoutFeed
           onNewEventRef.current?.(newEvent);
 
           syncToLocalDb(newEvent);
-        }
+        },
       )
       .subscribe();
 
@@ -93,13 +96,13 @@ export function useCheckoutFeed(userId: string | null, options?: UseCheckoutFeed
 
 async function syncToLocalDb(event: CheckoutEvent) {
   try {
-    const { ordersRepo } = await import('@/lib/db/repositories');
+    const { ordersRepo } = await import("@/lib/db/repositories");
     await ordersRepo.create({
       botName: event.bot_name,
       product: event.product,
       size: event.size,
       price: (event.price ?? 0) / 100,
-      store: event.store ?? 'Unknown',
+      store: event.store ?? "Unknown",
       profile: event.profile,
       orderNumber: event.order_number,
       success: event.success,
@@ -111,7 +114,7 @@ async function syncToLocalDb(event: CheckoutEvent) {
 }
 
 export function formatPrice(cents: number | null): string {
-  if (cents === null) return '-';
+  if (cents === null) return "-";
   return `$${(cents / 100).toFixed(2)}`;
 }
 

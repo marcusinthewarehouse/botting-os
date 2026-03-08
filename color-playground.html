@@ -1,0 +1,1093 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BottingOS Design System Playground</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f0f5fa;
+        --surface: #ffffff;
+        --surface-raised: #f7fafc;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-tertiary: #94a3b8;
+        --border: #e2e8f0;
+        --accent: #7c3aed;
+        --accent-hover: #6d28d9;
+        --accent-subtle: rgba(124, 58, 237, 0.08);
+        --accent-text: #7c3aed;
+        --success: #16a34a;
+        --success-bg: rgba(22, 163, 74, 0.08);
+        --warning: #d97706;
+        --warning-bg: rgba(217, 119, 6, 0.08);
+        --danger: #dc2626;
+        --danger-bg: rgba(220, 38, 38, 0.08);
+        --sidebar-bg: #ffffff;
+        --sidebar-border: #e2e8f0;
+        --shadow-sm:
+          0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+        --shadow-md:
+          0 4px 12px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.04);
+        --titlebar-bg: #ffffff;
+      }
+      [data-theme="dark"] {
+        --bg: #23272f;
+        --surface: #2c313c;
+        --surface-raised: #353b48;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --text-tertiary: #64748b;
+        --border: rgba(255, 255, 255, 0.08);
+        --accent: #a78bfa;
+        --accent-hover: #c4b5fd;
+        --accent-subtle: rgba(167, 139, 250, 0.12);
+        --accent-text: #a78bfa;
+        --success: #4ade80;
+        --success-bg: rgba(74, 222, 128, 0.1);
+        --warning: #fcd34d;
+        --warning-bg: rgba(252, 211, 77, 0.1);
+        --danger: #f87171;
+        --danger-bg: rgba(248, 113, 113, 0.1);
+        --sidebar-bg: #1e2229;
+        --sidebar-border: rgba(255, 255, 255, 0.06);
+        --shadow-sm:
+          0 1px 3px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.15);
+        --shadow-md:
+          0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+        --titlebar-bg: #1e2229;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Outfit", sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        font-size: 14px;
+        line-height: 1.5;
+        transition:
+          background 0.2s,
+          color 0.2s;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .titlebar {
+        height: 36px;
+        background: var(--titlebar-bg);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        flex-shrink: 0;
+        transition:
+          background 0.2s,
+          border-color 0.2s;
+      }
+      .titlebar-left {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+      .titlebar-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .theme-toggle {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 3px 10px;
+        cursor: pointer;
+        font-family: "Outfit", sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        transition: all 0.15s;
+      }
+      .theme-toggle:hover {
+        color: var(--text-primary);
+      }
+      #toggle-label {
+        transition: none;
+      }
+      .titlebar-controls {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+      }
+      .mac-btn {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+      }
+      .mac-btn.red {
+        background: #ff5f57;
+      }
+      .mac-btn.yellow {
+        background: #ffbd2e;
+      }
+      .mac-btn.green {
+        background: #28c840;
+      }
+      .app-shell {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+      }
+      .sidebar {
+        width: 220px;
+        background: var(--sidebar-bg);
+        border-right: 1px solid var(--sidebar-border);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        transition:
+          background 0.2s,
+          border-color 0.2s;
+      }
+      .sidebar-logo {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--sidebar-border);
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .logo-icon {
+        width: 28px;
+        height: 28px;
+        background: var(--accent-subtle);
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent);
+        transition:
+          background 0.2s,
+          color 0.2s;
+      }
+      .logo-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.01em;
+      }
+      .sidebar-nav {
+        flex: 1;
+        padding: 8px;
+        overflow-y: auto;
+      }
+      .nav-section-label {
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-tertiary);
+        padding: 8px 10px 4px;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 7px 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        color: var(--text-secondary);
+        font-size: 13.5px;
+        font-weight: 500;
+        margin-bottom: 1px;
+        transition: all 0.12s;
+      }
+      .nav-item:hover {
+        background: var(--accent-subtle);
+        color: var(--accent-text);
+      }
+      .nav-item.active {
+        background: var(--accent-subtle);
+        color: var(--accent-text);
+        font-weight: 600;
+      }
+      .nav-item svg {
+        flex-shrink: 0;
+      }
+      .nav-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 8px 10px;
+      }
+      .sidebar-footer {
+        padding: 8px;
+        border-top: 1px solid var(--sidebar-border);
+      }
+      .collapse-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: var(--text-tertiary);
+        font-size: 12px;
+        font-weight: 500;
+        background: none;
+        border: none;
+        width: 100%;
+        font-family: "Outfit", sans-serif;
+        transition: all 0.12s;
+      }
+      .collapse-btn:hover {
+        background: var(--surface-raised);
+        color: var(--text-secondary);
+      }
+      .main-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 28px 32px;
+      }
+      .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 24px;
+      }
+      .page-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+      .page-subtitle {
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-top: 3px;
+      }
+      .header-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-family: "Outfit", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.12s;
+        border: none;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--accent-hover);
+      }
+      .btn-outline {
+        background: transparent;
+        color: var(--text-secondary);
+        border: 1px solid var(--border);
+      }
+      .btn-outline:hover {
+        background: var(--surface-raised);
+        color: var(--text-primary);
+      }
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .kpi-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.15s;
+        position: relative;
+        overflow: hidden;
+      }
+      .kpi-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: transparent;
+        transition: background 0.15s;
+      }
+      .kpi-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+      }
+      .kpi-card:hover::after {
+        background: var(--accent);
+      }
+      .kpi-label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--text-tertiary);
+        margin-bottom: 8px;
+        padding-right: 40px;
+      }
+      .kpi-value {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 28px;
+        font-weight: 500;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+        line-height: 1;
+        margin-bottom: 10px;
+      }
+      .kpi-value.green {
+        color: var(--success);
+      }
+      .kpi-value.red {
+        color: var(--danger);
+      }
+      .kpi-trend {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11.5px;
+        font-weight: 500;
+        color: var(--text-tertiary);
+      }
+      .trend-up {
+        color: var(--success);
+      }
+      .kpi-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+      }
+      .bg-success {
+        background: var(--success-bg);
+      }
+      .bg-accent {
+        background: var(--accent-subtle);
+      }
+      .bg-warning {
+        background: var(--warning-bg);
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        margin-bottom: 20px;
+      }
+      .card-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .card-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.01em;
+      }
+      .card-subtitle {
+        font-size: 12px;
+        color: var(--text-tertiary);
+        margin-top: 2px;
+      }
+      .card-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .search-box {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-family: "Outfit", sans-serif;
+        font-size: 12.5px;
+        color: var(--text-tertiary);
+        width: 180px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      thead th {
+        padding: 10px 20px;
+        text-align: left;
+        font-size: 10.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-tertiary);
+        border-bottom: 1px solid var(--border);
+        background: var(--surface-raised);
+      }
+      tbody tr {
+        border-bottom: 1px solid var(--border);
+        transition: background 0.1s;
+      }
+      tbody tr:last-child {
+        border-bottom: none;
+      }
+      tbody tr:hover {
+        background: var(--accent-subtle);
+      }
+      tbody td {
+        padding: 12px 20px;
+        font-size: 13.5px;
+        color: var(--text-primary);
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12.5px;
+        font-weight: 500;
+      }
+      .dim {
+        color: var(--text-secondary);
+        font-size: 12px;
+      }
+      .text-success {
+        color: var(--success);
+      }
+      .text-danger {
+        color: var(--danger);
+      }
+      .text-accent {
+        color: var(--accent-text);
+      }
+      .fw6 {
+        font-weight: 600;
+        font-size: 13.5px;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 8px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+      .badge::before {
+        content: "";
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .badge-success {
+        background: var(--success-bg);
+        color: var(--success);
+      }
+      .badge-success::before {
+        background: var(--success);
+      }
+      .badge-warning {
+        background: var(--warning-bg);
+        color: var(--warning);
+      }
+      .badge-warning::before {
+        background: var(--warning);
+      }
+      .badge-danger {
+        background: var(--danger-bg);
+        color: var(--danger);
+      }
+      .badge-danger::before {
+        background: var(--danger);
+      }
+      .badge-accent {
+        background: var(--accent-subtle);
+        color: var(--accent-text);
+      }
+      .badge-accent::before {
+        background: var(--accent);
+      }
+      ::-webkit-scrollbar {
+        width: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="titlebar">
+      <div class="titlebar-left">BottingOS</div>
+      <div class="titlebar-right">
+        <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">
+          <svg
+            id="toggle-icon"
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="5" />
+            <path
+              d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+            />
+          </svg>
+          <span id="toggle-label">Light mode</span>
+        </button>
+        <div class="titlebar-controls">
+          <button class="mac-btn red"></button>
+          <button class="mac-btn yellow"></button>
+          <button class="mac-btn green"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <div class="logo-icon">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="4 17 10 11 4 5" />
+              <line x1="12" x2="20" y1="19" y2="19" />
+            </svg>
+          </div>
+          <span class="logo-name">BottingOS</span>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-section-label">Main</div>
+          <a class="nav-item active" href="#">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+            </svg>
+            Dashboard
+          </a>
+          <a class="nav-item" href="#">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="12" x2="12" y1="2" y2="22" />
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg>
+            Calculator
+          </a>
+          <a class="nav-item" href="#">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+            </svg>
+            Tracker
+          </a>
+          <a class="nav-item" href="#">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+              />
+            </svg>
+            Orders
+          </a>
+          <a class="nav-item" href="#">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M5 8h14M5 8a2 2 0 1 0 0-4h14a2 2 0 1 0 0 4M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"
+              />
+            </svg>
+            Inventory
+          </a>
+          <div class="nav-divider"></div>
+          <div class="nav-section-label">Tools</div>
+          <a class="nav-item" href="#">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+              />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+            Emails
+          </a>
+          <a class="nav-item" href="#">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            Vault
+          </a>
+          <a class="nav-item" href="#">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+              <line x1="1" y1="10" x2="23" y2="10" />
+            </svg>
+            VCC
+          </a>
+          <a class="nav-item" href="#">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+              />
+            </svg>
+            Discord
+          </a>
+          <a class="nav-item" href="#">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+            Analytics
+          </a>
+          <a class="nav-item" href="#">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            Calendar
+          </a>
+          <a class="nav-item" href="#">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path
+                d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+              />
+            </svg>
+            Resources
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <button class="collapse-btn">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Collapse sidebar
+          </button>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">
+              Your command center for botting operations.
+            </p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-outline">
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Export
+            </button>
+            <button class="btn btn-primary">
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Add Entry
+            </button>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-badge bg-success">💰</div>
+            <div class="kpi-label">Total Profit</div>
+            <div class="kpi-value green">+$4,821.50</div>
+            <div class="kpi-trend trend-up">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                <polyline points="16 7 22 7 22 13" />
+              </svg>
+              +12.4% this month
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-badge bg-accent">✉️</div>
+            <div class="kpi-label">Active Emails</div>
+            <div class="kpi-value">48</div>
+            <div class="kpi-trend">No change this week</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-badge bg-warning">💳</div>
+            <div class="kpi-label">VCCs Tracked</div>
+            <div class="kpi-value">12</div>
+            <div class="kpi-trend trend-up">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                <polyline points="16 7 22 7 22 13" />
+              </svg>
+              3 added this week
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-badge bg-accent">📦</div>
+            <div class="kpi-label">Inventory Items</div>
+            <div class="kpi-value">127</div>
+            <div class="kpi-trend">In stock</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Recent Orders</div>
+              <div class="card-subtitle">
+                Live checkout events from your webhook feed
+              </div>
+            </div>
+            <div class="card-actions">
+              <div class="search-box">
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                Search orders...
+              </div>
+              <button
+                class="btn btn-outline"
+                style="padding: 5px 10px; font-size: 12px"
+              >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polygon
+                    points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"
+                  />
+                </svg>
+                Filter
+              </button>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Store</th>
+                <th>Size</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="fw6">Nike Air Max 90</div>
+                  <div class="dim">SKU: CT1919-100</div>
+                </td>
+                <td class="dim">Nike SNKRS</td>
+                <td class="mono">US 10</td>
+                <td class="mono text-success">+$340.00</td>
+                <td><span class="badge badge-success">Checked Out</span></td>
+                <td class="dim">2m ago</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="fw6">Jordan 1 Retro High OG</div>
+                  <div class="dim">SKU: DZ5485-612</div>
+                </td>
+                <td class="dim">Footlocker</td>
+                <td class="mono">US 11</td>
+                <td class="mono text-success">+$180.00</td>
+                <td><span class="badge badge-warning">Pending</span></td>
+                <td class="dim">14m ago</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="fw6">Yeezy Boost 350 V2</div>
+                  <div class="dim">SKU: HQ4540</div>
+                </td>
+                <td class="dim">Adidas</td>
+                <td class="mono">US 9.5</td>
+                <td class="mono text-danger">-$220.00</td>
+                <td><span class="badge badge-danger">Failed</span></td>
+                <td class="dim">1h ago</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="fw6">New Balance 550</div>
+                  <div class="dim">SKU: BB550WT1</div>
+                </td>
+                <td class="dim">New Balance</td>
+                <td class="mono">US 10.5</td>
+                <td class="mono text-success">+$110.00</td>
+                <td><span class="badge badge-success">Checked Out</span></td>
+                <td class="dim">3h ago</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="fw6">Off-White x Nike Dunk</div>
+                  <div class="dim">SKU: DM1602-101</div>
+                </td>
+                <td class="dim">StockX</td>
+                <td class="mono">US 8</td>
+                <td class="mono text-accent">$680.00</td>
+                <td><span class="badge badge-accent">Listed</span></td>
+                <td class="dim">Yesterday</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        var dark = false;
+        var sunIcon =
+          '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+        var moonIcon =
+          '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+        window.toggleTheme = function () {
+          dark = !dark;
+          document.documentElement.setAttribute(
+            "data-theme",
+            dark ? "dark" : "",
+          );
+          document.getElementById("toggle-label").textContent = dark
+            ? "Dark mode"
+            : "Light mode";
+          document
+            .getElementById("toggle-icon")
+            .setAttribute("viewBox", "0 0 24 24");
+          // Replace icon path safely via DOM, not innerHTML
+          var icon = document.getElementById("toggle-icon");
+          while (icon.firstChild) {
+            icon.removeChild(icon.firstChild);
+          }
+          var parser = new DOMParser();
+          var svgFrag = parser.parseFromString(
+            '<svg xmlns="http://www.w3.org/2000/svg">' +
+              (dark ? moonIcon : sunIcon) +
+              "</svg>",
+            "image/svg+xml",
+          );
+          var children = svgFrag.documentElement.childNodes;
+          for (var i = 0; i < children.length; i++) {
+            icon.appendChild(document.importNode(children[i], true));
+          }
+        };
+      })();
+    </script>
+  </body>
+</html>

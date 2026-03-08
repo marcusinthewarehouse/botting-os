@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Calculator,
@@ -10,7 +10,7 @@ import {
   Lock,
   CreditCard,
   Plus,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   CommandDialog,
   CommandInput,
@@ -19,21 +19,21 @@ import {
   CommandGroup,
   CommandItem,
   CommandSeparator,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 
 const navCommands = [
-  { label: 'Go to Dashboard', icon: LayoutDashboard, path: '/' },
-  { label: 'Go to Calculator', icon: Calculator, path: '/calculator' },
-  { label: 'Go to Tracker', icon: TrendingUp, path: '/tracker' },
-  { label: 'Go to Emails', icon: Mail, path: '/emails' },
-  { label: 'Go to Vault', icon: Lock, path: '/vault' },
-  { label: 'Go to VCC', icon: CreditCard, path: '/vcc' },
+  { label: "Go to Dashboard", icon: LayoutDashboard, path: "/" },
+  { label: "Go to Calculator", icon: Calculator, path: "/calculator" },
+  { label: "Go to Tracker", icon: TrendingUp, path: "/tracker" },
+  { label: "Go to Emails", icon: Mail, path: "/emails" },
+  { label: "Go to Vault", icon: Lock, path: "/vault" },
+  { label: "Go to VCC", icon: CreditCard, path: "/vcc" },
 ];
 
 const actionCommands = [
-  { label: 'Quick Profit Check', icon: Calculator, action: '/calculator' },
-  { label: 'Add Email', icon: Plus, action: '/emails' },
-  { label: 'Lock Vault', icon: Lock, action: '__lock_vault__' },
+  { label: "Quick Profit Check", icon: Calculator, action: "/calculator" },
+  { label: "Add Email", icon: Plus, action: "/emails" },
+  { label: "Lock Vault", icon: Lock, action: "__lock_vault__" },
 ];
 
 export function CommandPalette() {
@@ -42,22 +42,22 @@ export function CommandPalette() {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
         setOpen((prev) => !prev);
       }
     }
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   const handleSelect = useCallback(
     (value: string) => {
       setOpen(false);
-      if (value === '__lock_vault__') return;
+      if (value === "__lock_vault__") return;
       router.push(value);
     },
-    [router]
+    [router],
   );
 
   return (
@@ -67,8 +67,12 @@ export function CommandPalette() {
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup heading="Navigation">
           {navCommands.map((cmd) => (
-            <CommandItem key={cmd.path} value={cmd.label} onSelect={() => handleSelect(cmd.path)}>
-              <cmd.icon className="size-4 text-zinc-400" />
+            <CommandItem
+              key={cmd.path}
+              value={cmd.label}
+              onSelect={() => handleSelect(cmd.path)}
+            >
+              <cmd.icon className="size-4 text-muted-foreground" />
               <span>{cmd.label}</span>
             </CommandItem>
           ))}
@@ -76,8 +80,12 @@ export function CommandPalette() {
         <CommandSeparator />
         <CommandGroup heading="Actions">
           {actionCommands.map((cmd) => (
-            <CommandItem key={cmd.label} value={cmd.label} onSelect={() => handleSelect(cmd.action)}>
-              <cmd.icon className="size-4 text-zinc-400" />
+            <CommandItem
+              key={cmd.label}
+              value={cmd.label}
+              onSelect={() => handleSelect(cmd.action)}
+            >
+              <cmd.icon className="size-4 text-muted-foreground" />
               <span>{cmd.label}</span>
             </CommandItem>
           ))}

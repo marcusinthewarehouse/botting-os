@@ -47,41 +47,125 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* =========================================================
+   LIGHT MODE (default)
+   ========================================================= */
 :root {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.769 0.163 70.08);
-  --primary-foreground: oklch(0.141 0.005 285.823);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.769 0.163 70.08);
-  --accent-foreground: oklch(0.141 0.005 285.823);
-  --destructive: oklch(0.654 0.209 22.216);
-  --border: oklch(0.274 0.006 286.033);
-  --input: oklch(0.274 0.006 286.033);
-  --ring: oklch(0.769 0.163 70.08);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --radius: 0.5rem;
-  --sidebar: oklch(0.141 0.005 285.823);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.769 0.163 70.08);
-  --sidebar-primary-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.769 0.163 70.08);
-  --sidebar-width: 240px;
-  --sidebar-collapsed-width: 64px;
+  /* Base */
+  --background: oklch(0.969 0.008 247); /* #F0F5FA */
+  --foreground: oklch(0.134 0.04 264); /* #0F172A */
+
+  /* Cards & surfaces */
+  --card: oklch(1 0 0); /* #FFFFFF */
+  --card-foreground: oklch(0.134 0.04 264);
+
+  /* Popover */
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.134 0.04 264);
+
+  /* Primary - Violet */
+  --primary: oklch(0.491 0.244 301); /* #7C3AED */
+  --primary-foreground: oklch(1 0 0); /* #FFFFFF */
+
+  /* Secondary */
+  --secondary: oklch(0.979 0.006 247); /* #F7FAFC */
+  --secondary-foreground: oklch(0.134 0.04 264);
+
+  /* Muted */
+  --muted: oklch(0.979 0.006 247); /* #F7FAFC */
+  --muted-foreground: oklch(0.681 0.023 264); /* #94A3B8 */
+
+  /* Accent (subtle violet tint for hover states) */
+  --accent: oklch(0.961 0.02 301); /* violet-50 ~#F5F3FF */
+  --accent-foreground: oklch(0.491 0.244 301); /* #7C3AED */
+
+  /* Destructive */
+  --destructive: oklch(0.559 0.219 25); /* #DC2626 */
+
+  /* Borders & inputs */
+  --border: oklch(0.906 0.013 256); /* #E2E8F0 */
+  --input: oklch(0.906 0.013 256);
+  --ring: oklch(0.491 0.244 301); /* violet */
+
+  /* Charts */
+  --chart-1: oklch(0.491 0.244 301);
+  --chart-2: oklch(0.6 0.2 301);
+  --chart-3: oklch(0.7 0.15 270);
+  --chart-4: oklch(0.559 0.219 25);
+  --chart-5: oklch(0.65 0.16 160);
+
+  /* Radius */
+  --radius: 0.625rem;
+
+  /* Sidebar */
+  --sidebar: oklch(1 0 0); /* #FFFFFF */
+  --sidebar-foreground: oklch(0.134 0.04 264);
+  --sidebar-primary: oklch(0.491 0.244 301);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.961 0.02 301);
+  --sidebar-accent-foreground: oklch(0.491 0.244 301);
+  --sidebar-border: oklch(0.906 0.013 256);
+  --sidebar-ring: oklch(0.491 0.244 301);
+  --sidebar-width: 220px;
+  --sidebar-collapsed-width: 56px;
+}
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+.dark {
+  /* Base */
+  --background: oklch(0.213 0.014 264); /* #23272F */
+  --foreground: oklch(0.981 0.004 247); /* #F8FAFC */
+
+  /* Cards & surfaces */
+  --card: oklch(0.25 0.018 264); /* #2C313C */
+  --card-foreground: oklch(0.981 0.004 247);
+
+  /* Popover */
+  --popover: oklch(0.25 0.018 264);
+  --popover-foreground: oklch(0.981 0.004 247);
+
+  /* Primary - Soft Violet */
+  --primary: oklch(0.735 0.177 304); /* #A78BFA */
+  --primary-foreground: oklch(0.16 0.06 304);
+
+  /* Secondary */
+  --secondary: oklch(0.295 0.018 264); /* #353B48 */
+  --secondary-foreground: oklch(0.981 0.004 247);
+
+  /* Muted */
+  --muted: oklch(0.295 0.018 264);
+  --muted-foreground: oklch(0.681 0.023 264); /* #94A3B8 */
+
+  /* Accent */
+  --accent: oklch(0.735 0.177 304 / 12%);
+  --accent-foreground: oklch(0.735 0.177 304); /* #A78BFA */
+
+  /* Destructive */
+  --destructive: oklch(0.697 0.181 25); /* #F87171 */
+
+  /* Borders & inputs */
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.735 0.177 304);
+
+  /* Charts */
+  --chart-1: oklch(0.735 0.177 304);
+  --chart-2: oklch(0.6 0.2 304);
+  --chart-3: oklch(0.697 0.181 25);
+  --chart-4: oklch(0.681 0.16 160);
+  --chart-5: oklch(0.75 0.14 240);
+
+  /* Sidebar */
+  --sidebar: oklch(0.183 0.014 264); /* #1E2229 */
+  --sidebar-foreground: oklch(0.981 0.004 247);
+  --sidebar-primary: oklch(0.735 0.177 304);
+  --sidebar-primary-foreground: oklch(0.16 0.06 304);
+  --sidebar-accent: oklch(0.735 0.177 304 / 12%);
+  --sidebar-accent-foreground: oklch(0.735 0.177 304);
+  --sidebar-border: oklch(1 0 0 / 6%);
+  --sidebar-ring: oklch(0.735 0.177 304);
 }
 
 @layer base {
@@ -96,11 +180,27 @@
   }
 }
 
-/* Custom scrollbars */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(0.906 0.013 256);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.681 0.023 264);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: oklch(1 0 0 / 12%);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: oklch(1 0 0 / 20%);
+}
 
 /* Disable text selection on UI chrome */
 .no-select {
@@ -109,11 +209,22 @@
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-6px); }
-  40% { transform: translateX(6px); }
-  60% { transform: translateX(-4px); }
-  80% { transform: translateX(4px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
 }
 
 @layer utilities {

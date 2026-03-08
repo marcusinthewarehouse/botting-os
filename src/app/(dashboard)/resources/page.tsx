@@ -1,37 +1,37 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Plus, Search, BookOpen, Trash2 } from 'lucide-react';
-import { PageTransition } from '@/components/page-transition';
-import { PageHeader } from '@/components/ui/page-header';
-import { EmptyState } from '@/components/ui/empty-state';
-import { Input } from '@/components/ui/input';
-import { ResourceCard } from '@/components/resources/resource-card';
-import { ResourceForm } from '@/components/resources/resource-form';
-import * as resourcesRepo from '@/lib/db/repositories/resources';
-import type { Resource } from '@/lib/db/types';
-import { cn } from '@/lib/utils';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Plus, Search, BookOpen, Trash2 } from "lucide-react";
+import { PageTransition } from "@/components/page-transition";
+import { PageHeader } from "@/components/ui/page-header";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Input } from "@/components/ui/input";
+import { ResourceCard } from "@/components/resources/resource-card";
+import { ResourceForm } from "@/components/resources/resource-form";
+import * as resourcesRepo from "@/lib/db/repositories/resources";
+import type { Resource } from "@/lib/db/types";
+import { cn } from "@/lib/utils";
 
 const ALL_CATEGORIES = [
-  'All',
-  'Getting Started',
-  'Bots',
-  'Proxies',
-  'Cook Groups',
-  'Marketplaces',
-  'Tools',
-  'Education',
-  'Other',
+  "All",
+  "Getting Started",
+  "Bots",
+  "Proxies",
+  "Cook Groups",
+  "Marketplaces",
+  "Tools",
+  "Education",
+  "Other",
 ] as const;
 
 function openLink(url: string) {
-  window.open(url, '_blank');
+  window.open(url, "_blank");
 }
 
 export default function ResourcesPage() {
   const [resources, setResources] = useState<Resource[]>([]);
-  const [search, setSearch] = useState('');
-  const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string>("All");
   const [formOpen, setFormOpen] = useState(false);
   const [editingResource, setEditingResource] = useState<Resource | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
@@ -55,7 +55,7 @@ export default function ResourcesPage() {
   const filtered = useMemo(() => {
     let result = resources;
 
-    if (activeCategory !== 'All') {
+    if (activeCategory !== "All") {
       result = result.filter((r) => r.category === activeCategory);
     }
 
@@ -64,7 +64,7 @@ export default function ResourcesPage() {
       result = result.filter(
         (r) =>
           r.name.toLowerCase().includes(q) ||
-          (r.description?.toLowerCase().includes(q) ?? false)
+          (r.description?.toLowerCase().includes(q) ?? false),
       );
     }
 
@@ -72,21 +72,31 @@ export default function ResourcesPage() {
   }, [resources, activeCategory, search]);
 
   const handleCreate = useCallback(
-    async (data: { name: string; url: string; description?: string; category: string }) => {
+    async (data: {
+      name: string;
+      url: string;
+      description?: string;
+      category: string;
+    }) => {
       await resourcesRepo.create({ ...data, isCustom: true });
       await loadResources();
     },
-    [loadResources]
+    [loadResources],
   );
 
   const handleUpdate = useCallback(
-    async (data: { name: string; url: string; description?: string; category: string }) => {
+    async (data: {
+      name: string;
+      url: string;
+      description?: string;
+      category: string;
+    }) => {
       if (!editingResource) return;
       await resourcesRepo.update(editingResource.id, data);
       setEditingResource(null);
       await loadResources();
     },
-    [editingResource, loadResources]
+    [editingResource, loadResources],
   );
 
   const handleDelete = useCallback(
@@ -100,20 +110,26 @@ export default function ResourcesPage() {
         setTimeout(() => setDeleteConfirm(null), 3000);
       }
     },
-    [deleteConfirm, loadResources]
+    [deleteConfirm, loadResources],
   );
 
   if (!loaded) {
     return (
       <PageTransition>
-        <PageHeader title="Resources" description="Curated links and tools for botting" />
+        <PageHeader
+          title="Resources"
+          description="Curated links and tools for botting"
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="rounded-lg border border-white/[0.06] bg-black p-4 space-y-3 animate-pulse">
-              <div className="size-8 rounded-md bg-zinc-800" />
-              <div className="h-4 bg-zinc-800 rounded w-3/4" />
-              <div className="h-3 bg-zinc-800/50 rounded w-full" />
-              <div className="h-5 bg-zinc-800/30 rounded w-20" />
+            <div
+              key={i}
+              className="rounded-lg border border-border bg-black p-4 space-y-3 animate-pulse"
+            >
+              <div className="size-8 rounded-md bg-muted" />
+              <div className="h-4 bg-muted rounded w-3/4" />
+              <div className="h-3 bg-muted/50 rounded w-full" />
+              <div className="h-5 bg-muted/30 rounded w-20" />
             </div>
           ))}
         </div>
@@ -128,7 +144,7 @@ export default function ResourcesPage() {
         description="Curated links and tools for botting"
         actions={[
           {
-            label: 'Add Link',
+            label: "Add Link",
             onClick: () => setFormOpen(true),
             icon: <Plus className="size-4" />,
           },
@@ -137,14 +153,16 @@ export default function ResourcesPage() {
 
       {/* Search */}
       <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-500" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
         <Input
           placeholder="Search links..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-10 bg-zinc-900 border-zinc-800"
+          className="pl-10 bg-card border-border"
         />
-        <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-600 bg-zinc-800 px-1.5 py-0.5 rounded">/</kbd>
+        <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+          /
+        </kbd>
       </div>
 
       {/* Category tabs */}
@@ -155,10 +173,10 @@ export default function ResourcesPage() {
             type="button"
             onClick={() => setActiveCategory(cat)}
             className={cn(
-              'rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150',
+              "rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150",
               activeCategory === cat
-                ? 'bg-amber-500/15 text-amber-400 border border-amber-500/25'
-                : 'bg-zinc-900 text-zinc-400 border border-white/[0.06] hover:bg-zinc-800 hover:text-zinc-300'
+                ? "bg-primary/15 text-primary border border-primary/25"
+                : "bg-card text-muted-foreground border border-border hover:bg-muted hover:text-muted-foreground",
             )}
           >
             {cat}
@@ -172,16 +190,16 @@ export default function ResourcesPage() {
           icon={BookOpen}
           title="No resources yet"
           description="Add links to bots, proxies, cook groups, and more."
-          action={{ label: 'Add Link', onClick: () => setFormOpen(true) }}
+          action={{ label: "Add Link", onClick: () => setFormOpen(true) }}
         />
       ) : filtered.length === 0 ? (
         <EmptyState
           icon={Search}
           title="No matches"
           description={
-            activeCategory !== 'All'
+            activeCategory !== "All"
               ? `No resources found in "${activeCategory}". Try another category or search term.`
-              : 'Try a different search term.'
+              : "Try a different search term."
           }
         />
       ) : (
@@ -191,8 +209,16 @@ export default function ResourcesPage() {
               <ResourceCard
                 resource={resource}
                 onOpen={openLink}
-                onEdit={resource.isCustom ? () => setEditingResource(resource) : undefined}
-                onDelete={resource.isCustom ? () => handleDelete(resource.id) : undefined}
+                onEdit={
+                  resource.isCustom
+                    ? () => setEditingResource(resource)
+                    : undefined
+                }
+                onDelete={
+                  resource.isCustom
+                    ? () => handleDelete(resource.id)
+                    : undefined
+                }
               />
               {deleteConfirm === resource.id && (
                 <button
@@ -211,9 +237,10 @@ export default function ResourcesPage() {
 
       {/* Footer count */}
       {resources.length > 0 && (
-        <p className="text-xs text-zinc-600 mt-6">
-          {filtered.length} of {resources.length} resource{resources.length !== 1 ? 's' : ''}
-          {activeCategory !== 'All' ? ` in ${activeCategory}` : ''}
+        <p className="text-xs text-muted-foreground mt-6">
+          {filtered.length} of {resources.length} resource
+          {resources.length !== 1 ? "s" : ""}
+          {activeCategory !== "All" ? ` in ${activeCategory}` : ""}
         </p>
       )}
 

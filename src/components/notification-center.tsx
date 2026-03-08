@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Bell,
   Package,
@@ -9,13 +9,13 @@ import {
   MessageSquare,
   Check,
   BellOff,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
-import { IS_TAURI } from '@/lib/db/client';
-import type { Notification } from '@/lib/db/types';
-import type { LucideIcon } from 'lucide-react';
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { IS_TAURI } from "@/lib/db/client";
+import type { Notification } from "@/lib/db/types";
+import type { LucideIcon } from "lucide-react";
 
 const notificationIcons: Record<string, LucideIcon> = {
   webhook_received: Package,
@@ -32,7 +32,7 @@ function formatRelativeTime(date: Date): string {
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
 
-  if (seconds < 60) return 'just now';
+  if (seconds < 60) return "just now";
   if (minutes < 60) return `${minutes}m ago`;
   if (hours < 24) return `${hours}h ago`;
   if (days < 7) return `${days}d ago`;
@@ -53,25 +53,32 @@ function NotificationItem({
     <button
       onClick={() => onRead(notification.id, notification.actionUrl)}
       className={cn(
-        'flex w-full items-start gap-3 px-4 py-3 text-left transition-colors duration-150',
-        'hover:bg-zinc-800/50',
-        isUnread && 'bg-amber-500/[0.04]'
+        "flex w-full items-start gap-3 px-4 py-3 text-left transition-colors duration-150",
+        "hover:bg-muted/50",
+        isUnread && "bg-primary/[0.04]",
       )}
     >
       <div className="relative mt-0.5 flex-shrink-0">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-800">
-          <Icon className="h-4 w-4 text-zinc-400" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
+          <Icon className="h-4 w-4 text-muted-foreground" />
         </div>
         {isUnread && (
-          <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-amber-500" />
+          <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-primary" />
         )}
       </div>
       <div className="min-w-0 flex-1">
-        <p className={cn('text-sm', isUnread ? 'font-medium text-zinc-50' : 'text-zinc-300')}>
+        <p
+          className={cn(
+            "text-sm",
+            isUnread ? "font-medium text-foreground" : "text-muted-foreground",
+          )}
+        >
           {notification.title}
         </p>
-        <p className="mt-0.5 truncate text-xs text-zinc-500">{notification.body}</p>
-        <p className="mt-1 text-xs text-zinc-600">
+        <p className="mt-0.5 truncate text-xs text-muted-foreground">
+          {notification.body}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
           {formatRelativeTime(new Date(notification.createdAt))}
         </p>
       </div>
@@ -104,7 +111,8 @@ export function NotificationCenter() {
       return;
     }
     try {
-      const { getNotifications, getUnreadCount } = await import('@/lib/notifications');
+      const { getNotifications, getUnreadCount } =
+        await import("@/lib/notifications");
       const [items, count] = await Promise.all([
         getNotifications(20),
         getUnreadCount(),
@@ -127,21 +135,24 @@ export function NotificationCenter() {
   useEffect(() => {
     if (!open) return;
     function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
   const handleNotificationClick = useCallback(
     async (id: number, actionUrl: string | null) => {
       try {
-        const { markAsRead } = await import('@/lib/notifications');
+        const { markAsRead } = await import("@/lib/notifications");
         await markAsRead(id);
         setNotifications((prev) =>
-          prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+          prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
         );
         setUnreadCount((prev) => Math.max(0, prev - 1));
       } catch {
@@ -152,12 +163,12 @@ export function NotificationCenter() {
         window.location.href = actionUrl;
       }
     },
-    []
+    [],
   );
 
   const handleMarkAllAsRead = useCallback(async () => {
     try {
-      const { markAllAsRead } = await import('@/lib/notifications');
+      const { markAllAsRead } = await import("@/lib/notifications");
       await markAllAsRead();
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       setUnreadCount(0);
@@ -175,23 +186,25 @@ export function NotificationCenter() {
         onClick={() => setOpen((prev) => !prev)}
         aria-label="Notifications"
       >
-        <Bell className="h-4 w-4 text-zinc-400" />
+        <Bell className="h-4 w-4 text-muted-foreground" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-black">
-            {unreadCount > 99 ? '99+' : unreadCount}
+          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-black">
+            {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
       </Button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-[380px] overflow-hidden rounded-lg border border-white/[0.06] bg-zinc-900/80 shadow-xl backdrop-blur-xl">
-          <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-3">
-            <h3 className="text-sm font-medium text-zinc-50">Notifications</h3>
+        <div className="absolute right-0 top-full z-50 mt-2 w-[380px] overflow-hidden rounded-lg border border-border bg-card/80 shadow-xl backdrop-blur-xl">
+          <div className="flex items-center justify-between border-b border-border px-4 py-3">
+            <h3 className="text-sm font-medium text-foreground">
+              Notifications
+            </h3>
             {unreadCount > 0 && (
               <Button
                 variant="ghost"
                 size="xs"
-                className="text-xs text-zinc-400 hover:text-zinc-200"
+                className="text-xs text-muted-foreground hover:text-foreground/80"
                 onClick={handleMarkAllAsRead}
               >
                 <Check className="mr-1 h-3 w-3" />
@@ -209,10 +222,13 @@ export function NotificationCenter() {
               </>
             ) : notifications.length === 0 ? (
               <div className="flex flex-col items-center gap-2 py-10">
-                <BellOff className="h-8 w-8 text-zinc-600" />
-                <p className="text-sm text-zinc-500">No notifications yet</p>
-                <p className="text-xs text-zinc-600">
-                  Alerts from webhooks, price drops, and Discord will appear here
+                <BellOff className="h-8 w-8 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  No notifications yet
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Alerts from webhooks, price drops, and Discord will appear
+                  here
                 </p>
               </div>
             ) : (

@@ -1,5 +1,5 @@
-import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
-import * as schema from './schema';
+import type { InferSelectModel, InferInsertModel } from "drizzle-orm";
+import * as schema from "./schema";
 
 export type Email = InferSelectModel<typeof schema.emails>;
 export type NewEmail = InferInsertModel<typeof schema.emails>;
@@ -16,8 +16,12 @@ export type NewOrder = InferInsertModel<typeof schema.orders>;
 export type InventoryItem = InferSelectModel<typeof schema.inventoryItems>;
 export type NewInventoryItem = InferInsertModel<typeof schema.inventoryItems>;
 
-export type CalculatorHistory = InferSelectModel<typeof schema.calculatorHistory>;
-export type NewCalculatorHistory = InferInsertModel<typeof schema.calculatorHistory>;
+export type CalculatorHistory = InferSelectModel<
+  typeof schema.calculatorHistory
+>;
+export type NewCalculatorHistory = InferInsertModel<
+  typeof schema.calculatorHistory
+>;
 
 export type TrackerEntry = InferSelectModel<typeof schema.trackerEntries>;
 export type NewTrackerEntry = InferInsertModel<typeof schema.trackerEntries>;

@@ -4,11 +4,11 @@ export function CardSkeleton({ count = 4 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="rounded-lg border border-white/[0.06] bg-black p-6 space-y-3 animate-pulse"
+          className="rounded-lg border border-border bg-black p-6 space-y-3 animate-pulse"
         >
-          <div className="h-3 bg-zinc-800 rounded w-1/2" />
-          <div className="h-8 bg-zinc-800/60 rounded w-3/4" />
-          <div className="h-3 bg-zinc-800/30 rounded w-2/3" />
+          <div className="h-3 bg-muted rounded w-1/2" />
+          <div className="h-8 bg-muted/60 rounded w-3/4" />
+          <div className="h-3 bg-muted/30 rounded w-2/3" />
         </div>
       ))}
     </div>

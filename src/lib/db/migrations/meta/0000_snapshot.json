@@ -226,12 +226,8 @@
           "name": "inventory_items_order_id_orders_id_fk",
           "tableFrom": "inventory_items",
           "tableTo": "orders",
-          "columnsFrom": [
-            "order_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["order_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -625,12 +621,8 @@
           "name": "vccs_linked_account_id_emails_id_fk",
           "tableFrom": "vccs",
           "tableTo": "emails",
-          "columnsFrom": [
-            "linked_account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["linked_account_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

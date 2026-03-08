@@ -1,7 +1,7 @@
-import { db } from '../client';
-import { drops } from '../schema';
-import { eq, desc, and, gte, lte, isNotNull } from 'drizzle-orm';
-import type { Drop, NewDrop } from '../types';
+import { db } from "../client";
+import { drops } from "../schema";
+import { eq, desc, and, gte, lte, isNotNull } from "drizzle-orm";
+import type { Drop, NewDrop } from "../types";
 
 export async function getAll(): Promise<Drop[]> {
   return db.select().from(drops).orderBy(desc(drops.dropDate));
@@ -12,12 +12,17 @@ export async function getById(id: number): Promise<Drop | undefined> {
   return rows[0];
 }
 
-export async function create(data: Omit<NewDrop, 'id' | 'createdAt'>): Promise<void> {
+export async function create(
+  data: Omit<NewDrop, "id" | "createdAt">,
+): Promise<void> {
   const now = new Date();
   await db.insert(drops).values({ ...data, createdAt: now });
 }
 
-export async function update(id: number, data: Partial<Omit<NewDrop, 'id' | 'createdAt'>>): Promise<void> {
+export async function update(
+  id: number,
+  data: Partial<Omit<NewDrop, "id" | "createdAt">>,
+): Promise<void> {
   await db.update(drops).set(data).where(eq(drops.id, id));
 }
 
@@ -46,12 +51,7 @@ export async function getPendingReminders(): Promise<Drop[]> {
   return db
     .select()
     .from(drops)
-    .where(
-      and(
-        eq(drops.reminded, false),
-        isNotNull(drops.reminderMinutes)
-      )
-    );
+    .where(and(eq(drops.reminded, false), isNotNull(drops.reminderMinutes)));
 }
 
 export async function markReminded(id: number): Promise<void> {

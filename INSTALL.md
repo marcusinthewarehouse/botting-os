@@ -23,6 +23,7 @@ Download the latest release from the [GitHub Releases](https://github.com/your-o
 This app is not signed with an Apple Developer certificate, so macOS Gatekeeper will block it on first launch.
 
 **Option A - Right-click method (recommended):**
+
 1. Open Finder and navigate to Applications
 2. Right-click (or Control-click) on `BottingOS.app`
 3. Select "Open" from the context menu
@@ -30,12 +31,15 @@ This app is not signed with an Apple Developer certificate, so macOS Gatekeeper 
 5. The app will launch normally from now on
 
 **Option B - Terminal method:**
+
 ```bash
 xattr -cr /Applications/BottingOS.app
 ```
+
 Then double-click to open normally.
 
 **Option C - System Settings:**
+
 1. Try to open the app normally (it will be blocked)
 2. Go to System Settings > Privacy & Security
 3. Scroll down to find the "BottingOS was blocked" message
@@ -51,6 +55,7 @@ Then double-click to open normally.
 ## Data Storage
 
 BottingOS stores its database at:
+
 - **macOS**: `~/Library/Application Support/com.bottingos.app/`
 - **Windows**: `%APPDATA%/com.bottingos.app/`
 
@@ -82,6 +87,7 @@ npm run tauri:build
 ```
 
 The built app will be at:
+
 - macOS: `src-tauri/target/release/bundle/dmg/BottingOS_*.dmg`
 - Windows: `src-tauri/target/release/bundle/nsis/BottingOS_*-setup.exe`
 
@@ -92,6 +98,7 @@ See the "First Launch" section above. The app is unsigned and requires manual Ga
 
 **Database errors on launch:**
 Delete the database file and restart. The app will recreate it with fresh migrations:
+
 ```bash
 # macOS
 rm ~/Library/Application\ Support/com.bottingos.app/bottingos.db
@@ -102,6 +109,7 @@ Remove-Item "$env:APPDATA/com.bottingos.app/bottingos.db"
 
 **Blank screen after update:**
 Clear the web cache:
+
 ```bash
 # macOS
 rm -rf ~/Library/Application\ Support/com.bottingos.app/EBWebView

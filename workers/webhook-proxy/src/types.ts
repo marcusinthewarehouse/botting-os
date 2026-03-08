@@ -3,7 +3,7 @@ export type {
   DiscordEmbed,
   EmbedField,
   CheckoutEvent,
-} from './parsers/types';
+} from "./parsers/types";
 
 export interface Env {
   SUPABASE_URL: string;

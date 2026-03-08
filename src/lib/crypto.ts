@@ -1,7 +1,10 @@
 // Ensures Uint8Array has a plain ArrayBuffer (not SharedArrayBuffer)
 // Required because Web Crypto API types require ArrayBuffer specifically
 function toArrayBuffer(arr: Uint8Array): ArrayBuffer {
-  return arr.buffer.slice(arr.byteOffset, arr.byteOffset + arr.byteLength) as ArrayBuffer;
+  return arr.buffer.slice(
+    arr.byteOffset,
+    arr.byteOffset + arr.byteLength,
+  ) as ArrayBuffer;
 }
 
 class CryptoService {
@@ -12,18 +15,23 @@ class CryptoService {
 
   async deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
     const keyMaterial = await crypto.subtle.importKey(
-      'raw',
+      "raw",
       toArrayBuffer(new TextEncoder().encode(password)),
-      'PBKDF2',
+      "PBKDF2",
       false,
-      ['deriveKey']
+      ["deriveKey"],
     );
     const key = await crypto.subtle.deriveKey(
-      { name: 'PBKDF2', salt: toArrayBuffer(salt), iterations: this.PBKDF2_ITERATIONS, hash: 'SHA-256' },
+      {
+        name: "PBKDF2",
+        salt: toArrayBuffer(salt),
+        iterations: this.PBKDF2_ITERATIONS,
+        hash: "SHA-256",
+      },
       keyMaterial,
-      { name: 'AES-GCM', length: 256 },
+      { name: "AES-GCM", length: 256 },
       false,
-      ['encrypt', 'decrypt']
+      ["encrypt", "decrypt"],
     );
     this.key = key;
     this.resetIdleTimer();
@@ -32,28 +40,34 @@ class CryptoService {
 
   async hashPassword(password: string, salt: Uint8Array): Promise<string> {
     const keyMaterial = await crypto.subtle.importKey(
-      'raw',
+      "raw",
       toArrayBuffer(new TextEncoder().encode(password)),
-      'PBKDF2',
+      "PBKDF2",
       false,
-      ['deriveBits']
+      ["deriveBits"],
     );
     const bits = await crypto.subtle.deriveBits(
-      { name: 'PBKDF2', salt: toArrayBuffer(salt), iterations: this.PBKDF2_ITERATIONS, hash: 'SHA-256' },
+      {
+        name: "PBKDF2",
+        salt: toArrayBuffer(salt),
+        iterations: this.PBKDF2_ITERATIONS,
+        hash: "SHA-256",
+      },
       keyMaterial,
-      256
+      256,
     );
     return btoa(String.fromCharCode(...new Uint8Array(bits)));
   }
 
   async encrypt(plaintext: string): Promise<{ data: Uint8Array; iv: string }> {
-    if (!this.key) throw new Error('Encryption key not available. Unlock the app first.');
+    if (!this.key)
+      throw new Error("Encryption key not available. Unlock the app first.");
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const encoded = new TextEncoder().encode(plaintext);
     const encrypted = await crypto.subtle.encrypt(
-      { name: 'AES-GCM', iv: toArrayBuffer(iv) },
+      { name: "AES-GCM", iv: toArrayBuffer(iv) },
       this.key,
-      toArrayBuffer(encoded)
+      toArrayBuffer(encoded),
     );
     return {
       data: new Uint8Array(encrypted),
@@ -62,12 +76,13 @@ class CryptoService {
   }
 
   async decrypt(data: Uint8Array, ivBase64: string): Promise<string> {
-    if (!this.key) throw new Error('Encryption key not available. Unlock the app first.');
-    const iv = Uint8Array.from(atob(ivBase64), c => c.charCodeAt(0));
+    if (!this.key)
+      throw new Error("Encryption key not available. Unlock the app first.");
+    const iv = Uint8Array.from(atob(ivBase64), (c) => c.charCodeAt(0));
     const decrypted = await crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv: toArrayBuffer(iv) },
+      { name: "AES-GCM", iv: toArrayBuffer(iv) },
       this.key,
-      toArrayBuffer(data)
+      toArrayBuffer(data),
     );
     return new TextDecoder().decode(decrypted);
   }
@@ -81,7 +96,7 @@ class CryptoService {
   }
 
   saltFromBase64(b64: string): Uint8Array {
-    return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
   }
 
   isUnlocked(): boolean {
@@ -101,8 +116,14 @@ class CryptoService {
 
   startActivityTracking(): void {
     const handler = () => this.resetIdleTimer();
-    const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'] as const;
-    events.forEach(event => {
+    const events = [
+      "mousemove",
+      "keydown",
+      "click",
+      "scroll",
+      "touchstart",
+    ] as const;
+    events.forEach((event) => {
       document.addEventListener(event, handler, { passive: true });
     });
   }

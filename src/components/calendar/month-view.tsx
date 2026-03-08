@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import type { Drop } from '@/lib/db/types';
+import { useMemo } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { Drop } from "@/lib/db/types";
 
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 
 const categoryDotColors: Record<string, string> = {
-  sneakers: 'bg-blue-400',
-  pokemon: 'bg-yellow-400',
-  funko: 'bg-purple-400',
-  supreme: 'bg-red-400',
-  electronics: 'bg-cyan-400',
-  'trading cards': 'bg-orange-400',
-  other: 'bg-zinc-400',
+  sneakers: "bg-blue-400",
+  pokemon: "bg-yellow-400",
+  funko: "bg-purple-400",
+  supreme: "bg-red-400",
+  electronics: "bg-cyan-400",
+  "trading cards": "bg-orange-400",
+  other: "bg-muted-foreground",
 };
 
 function getDotColor(category: string | null): string {
-  return categoryDotColors[category ?? 'other'] ?? categoryDotColors.other;
+  return categoryDotColors[category ?? "other"] ?? categoryDotColors.other;
 }
 
 function isSameDay(a: Date, b: Date): boolean {
@@ -58,9 +58,9 @@ export function MonthView({
     const startOffset = firstDay.getDay();
     const totalDays = lastDay.getDate();
 
-    const label = firstDay.toLocaleDateString('en-US', {
-      month: 'long',
-      year: 'numeric',
+    const label = firstDay.toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
     });
 
     const allWeeks: (number | null)[][] = [];
@@ -108,24 +108,24 @@ export function MonthView({
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={onPrevMonth}
-          className="p-2 rounded-md text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition-colors duration-150"
+          className="p-2 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground/80 transition-colors duration-150"
         >
           <ChevronLeft className="size-4" />
         </button>
-        <h2 className="text-base font-medium text-zinc-50">{monthLabel}</h2>
+        <h2 className="text-base font-medium text-foreground">{monthLabel}</h2>
         <button
           onClick={onNextMonth}
-          className="p-2 rounded-md text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition-colors duration-150"
+          className="p-2 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground/80 transition-colors duration-150"
         >
           <ChevronRight className="size-4" />
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-px bg-white/[0.06] rounded-lg overflow-hidden border border-white/[0.06]">
+      <div className="grid grid-cols-7 gap-px bg-white/[0.06] rounded-lg overflow-hidden border border-border">
         {WEEKDAYS.map((day) => (
           <div
             key={day}
-            className="bg-zinc-900 px-2 py-2 text-center text-xs font-medium text-zinc-500"
+            className="bg-card px-2 py-2 text-center text-xs font-medium text-muted-foreground"
           >
             {day}
           </div>
@@ -137,7 +137,7 @@ export function MonthView({
               return (
                 <div
                   key={`empty-${wi}-${di}`}
-                  className="bg-zinc-950 min-h-20"
+                  className="bg-background min-h-20"
                 />
               );
             }
@@ -145,7 +145,9 @@ export function MonthView({
             const cellDate = new Date(year, month, day);
             const isToday = isSameDay(cellDate, today);
             const isPast = cellDate < today && !isToday;
-            const isSelected = selectedDate ? isSameDay(cellDate, selectedDate) : false;
+            const isSelected = selectedDate
+              ? isSameDay(cellDate, selectedDate)
+              : false;
             const dayDrops = dropsByDay.get(day) ?? [];
 
             return (
@@ -153,16 +155,18 @@ export function MonthView({
                 key={`day-${day}`}
                 onClick={() => onDayClick(cellDate)}
                 className={cn(
-                  'bg-zinc-950 min-h-20 p-2 text-left transition-colors duration-150 hover:bg-zinc-900',
-                  isToday && 'ring-1 ring-inset ring-amber-500/50',
-                  isSelected && 'bg-zinc-900',
-                  isPast && 'opacity-50'
+                  "bg-background min-h-20 p-2 text-left transition-colors duration-150 hover:bg-card",
+                  isToday && "ring-1 ring-inset ring-primary/50",
+                  isSelected && "bg-card",
+                  isPast && "opacity-50",
                 )}
               >
                 <span
                   className={cn(
-                    'text-xs font-mono tabular-nums',
-                    isToday ? 'text-amber-500 font-semibold' : 'text-zinc-400'
+                    "text-xs font-mono tabular-nums",
+                    isToday
+                      ? "text-primary font-semibold"
+                      : "text-muted-foreground",
                   )}
                 >
                   {day}
@@ -177,14 +181,14 @@ export function MonthView({
                           onDropClick(drop);
                         }}
                         className={cn(
-                          'size-2 rounded-full transition-transform duration-150 hover:scale-150',
-                          getDotColor(drop.category)
+                          "size-2 rounded-full transition-transform duration-150 hover:scale-150",
+                          getDotColor(drop.category),
                         )}
                         title={drop.productName}
                       />
                     ))}
                     {dayDrops.length > 3 && (
-                      <span className="text-[10px] text-zinc-500 font-mono">
+                      <span className="text-[10px] text-muted-foreground font-mono">
                         +{dayDrops.length - 3}
                       </span>
                     )}
@@ -192,7 +196,7 @@ export function MonthView({
                 )}
               </button>
             );
-          })
+          }),
         )}
       </div>
     </div>

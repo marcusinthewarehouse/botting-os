@@ -1,4 +1,4 @@
-export type Marketplace = 'ebay' | 'stockx' | 'goat';
+export type Marketplace = "ebay" | "stockx" | "goat";
 
 export interface FeeLineItem {
   label: string;
@@ -28,7 +28,7 @@ export interface FlipResult {
 }
 
 export interface EbayFeeOptions {
-  category: 'sneakers' | 'general' | 'books_media';
+  category: "sneakers" | "general" | "books_media";
   hasStore: boolean;
 }
 
@@ -57,15 +57,25 @@ function round2(n: number): number {
   return Math.round(n * 100) / 100;
 }
 
-export function calculateEbayFees(salePrice: number, options: EbayFeeOptions): FeeBreakdown {
+export function calculateEbayFees(
+  salePrice: number,
+  options: EbayFeeOptions,
+): FeeBreakdown {
   if (salePrice <= 0) {
-    return { marketplace: 'ebay', salePrice, fees: [], totalFees: 0, netPayout: 0, effectiveRate: 0 };
+    return {
+      marketplace: "ebay",
+      salePrice,
+      fees: [],
+      totalFees: 0,
+      netPayout: 0,
+      effectiveRate: 0,
+    };
   }
 
   const fees: FeeLineItem[] = [];
   let fvfAmount: number;
 
-  if (options.category === 'sneakers') {
+  if (options.category === "sneakers") {
     let rate: number;
     if (salePrice >= 100) {
       rate = options.hasStore ? 0.07 : 0.08;
@@ -73,49 +83,73 @@ export function calculateEbayFees(salePrice: number, options: EbayFeeOptions): F
       rate = options.hasStore ? 0.117 : 0.1255;
     }
     fvfAmount = round2(salePrice * rate);
-    fees.push({ label: 'Final Value Fee', amount: fvfAmount, rate });
-  } else if (options.category === 'books_media') {
+    fees.push({ label: "Final Value Fee", amount: fvfAmount, rate });
+  } else if (options.category === "books_media") {
     const rate = 0.153;
     fvfAmount = round2(salePrice * rate);
-    fees.push({ label: 'Final Value Fee', amount: fvfAmount, rate });
+    fees.push({ label: "Final Value Fee", amount: fvfAmount, rate });
   } else {
     // general category - tiered
     if (salePrice <= 7500) {
       const rate = 0.1325;
       fvfAmount = round2(salePrice * rate);
-      fees.push({ label: 'Final Value Fee', amount: fvfAmount, rate });
+      fees.push({ label: "Final Value Fee", amount: fvfAmount, rate });
     } else {
       const feeBelow = round2(7500 * 0.1325);
       const feeAbove = round2((salePrice - 7500) * 0.0235);
       fvfAmount = round2(feeBelow + feeAbove);
-      fees.push({ label: 'Final Value Fee (first $7,500 at 13.25%)', amount: feeBelow, rate: 0.1325 });
-      fees.push({ label: 'Final Value Fee (remainder at 2.35%)', amount: feeAbove, rate: 0.0235 });
+      fees.push({
+        label: "Final Value Fee (first $7,500 at 13.25%)",
+        amount: feeBelow,
+        rate: 0.1325,
+      });
+      fees.push({
+        label: "Final Value Fee (remainder at 2.35%)",
+        amount: feeAbove,
+        rate: 0.0235,
+      });
     }
   }
 
-  const perOrder = salePrice >= 10 ? 0.40 : 0.30;
-  fees.push({ label: 'Per-Order Fee', amount: perOrder });
+  const perOrder = salePrice >= 10 ? 0.4 : 0.3;
+  fees.push({ label: "Per-Order Fee", amount: perOrder });
 
   const totalFees = round2(fees.reduce((sum, f) => sum + f.amount, 0));
   const netPayout = round2(salePrice - totalFees);
 
   return {
-    marketplace: 'ebay',
+    marketplace: "ebay",
     salePrice,
     fees,
     totalFees,
     netPayout,
-    effectiveRate: round2(totalFees / salePrice * 10000) / 10000,
+    effectiveRate: round2((totalFees / salePrice) * 10000) / 10000,
   };
 }
 
-export function calculateStockXFees(salePrice: number, options: StockXFeeOptions): FeeBreakdown {
+export function calculateStockXFees(
+  salePrice: number,
+  options: StockXFeeOptions,
+): FeeBreakdown {
   if (salePrice <= 0) {
-    return { marketplace: 'stockx', salePrice, fees: [], totalFees: 0, netPayout: 0, effectiveRate: 0 };
+    return {
+      marketplace: "stockx",
+      salePrice,
+      fees: [],
+      totalFees: 0,
+      netPayout: 0,
+      effectiveRate: 0,
+    };
   }
 
   const fees: FeeLineItem[] = [];
-  const baseRates: Record<number, number> = { 1: 0.09, 2: 0.085, 3: 0.08, 4: 0.075, 5: 0.07 };
+  const baseRates: Record<number, number> = {
+    1: 0.09,
+    2: 0.085,
+    3: 0.08,
+    4: 0.075,
+    5: 0.07,
+  };
 
   let txRate = baseRates[options.sellerLevel];
 
@@ -127,32 +161,42 @@ export function calculateStockXFees(salePrice: number, options: StockXFeeOptions
   txRate = Math.max(txRate, 0.05);
 
   const txFee = round2(salePrice * txRate);
-  fees.push({ label: 'Transaction Fee', amount: txFee, rate: txRate });
+  fees.push({ label: "Transaction Fee", amount: txFee, rate: txRate });
 
   if (!options.paymentProcessingWaived) {
     const ppFee = round2(salePrice * 0.03);
-    fees.push({ label: 'Payment Processing', amount: ppFee, rate: 0.03 });
+    fees.push({ label: "Payment Processing", amount: ppFee, rate: 0.03 });
   }
 
   const shipping = options.shippingCost ?? 13.95;
-  fees.push({ label: 'Shipping', amount: shipping });
+  fees.push({ label: "Shipping", amount: shipping });
 
   const totalFees = round2(fees.reduce((sum, f) => sum + f.amount, 0));
   const netPayout = round2(salePrice - totalFees);
 
   return {
-    marketplace: 'stockx',
+    marketplace: "stockx",
     salePrice,
     fees,
     totalFees,
     netPayout,
-    effectiveRate: round2(totalFees / salePrice * 10000) / 10000,
+    effectiveRate: round2((totalFees / salePrice) * 10000) / 10000,
   };
 }
 
-export function calculateGoatFees(salePrice: number, options: GoatFeeOptions): FeeBreakdown {
+export function calculateGoatFees(
+  salePrice: number,
+  options: GoatFeeOptions,
+): FeeBreakdown {
   if (salePrice <= 0) {
-    return { marketplace: 'goat', salePrice, fees: [], totalFees: 0, netPayout: 0, effectiveRate: 0 };
+    return {
+      marketplace: "goat",
+      salePrice,
+      fees: [],
+      totalFees: 0,
+      netPayout: 0,
+      effectiveRate: 0,
+    };
   }
 
   const fees: FeeLineItem[] = [];
@@ -160,62 +204,75 @@ export function calculateGoatFees(salePrice: number, options: GoatFeeOptions): F
   let commissionRate: number;
   if (options.sellerRating >= 90) commissionRate = 0.095;
   else if (options.sellerRating >= 70) commissionRate = 0.15;
-  else if (options.sellerRating >= 50) commissionRate = 0.20;
+  else if (options.sellerRating >= 50) commissionRate = 0.2;
   else commissionRate = 0.25;
 
   if (options.isCanadian) commissionRate += 0.029;
 
   const commissionFee = round2(salePrice * commissionRate);
-  fees.push({ label: 'Commission', amount: commissionFee, rate: commissionRate });
+  fees.push({
+    label: "Commission",
+    amount: commissionFee,
+    rate: commissionRate,
+  });
 
   const sellerFee = options.sellerFee ?? 5;
-  fees.push({ label: 'Seller Fee', amount: sellerFee });
+  fees.push({ label: "Seller Fee", amount: sellerFee });
 
   const cashOutRate = options.cashOutRate ?? 0.029;
   const afterDeductions = salePrice - commissionFee - sellerFee;
   const cashOutFee = round2(Math.max(0, afterDeductions) * cashOutRate);
-  fees.push({ label: 'Cash-Out Fee', amount: cashOutFee, rate: cashOutRate });
+  fees.push({ label: "Cash-Out Fee", amount: cashOutFee, rate: cashOutRate });
 
   const totalFees = round2(fees.reduce((sum, f) => sum + f.amount, 0));
   const netPayout = round2(salePrice - totalFees);
 
   return {
-    marketplace: 'goat',
+    marketplace: "goat",
     salePrice,
     fees,
     totalFees,
     netPayout,
-    effectiveRate: round2(totalFees / salePrice * 10000) / 10000,
+    effectiveRate: round2((totalFees / salePrice) * 10000) / 10000,
   };
 }
 
 export function calculateFees(
   salePrice: number,
   marketplace: Marketplace,
-  options: FeeOptions
+  options: FeeOptions,
 ): FeeBreakdown {
   switch (marketplace) {
-    case 'ebay':
-      return calculateEbayFees(salePrice, options.ebay ?? { category: 'sneakers', hasStore: false });
-    case 'stockx':
-      return calculateStockXFees(salePrice, options.stockx ?? {
-        sellerLevel: 1,
-        hasQuickShip: false,
-        hasSuccessfulShip: false,
-        paymentProcessingWaived: false,
-      });
-    case 'goat':
-      return calculateGoatFees(salePrice, options.goat ?? {
-        sellerRating: 90,
-        isCanadian: false,
-      });
+    case "ebay":
+      return calculateEbayFees(
+        salePrice,
+        options.ebay ?? { category: "sneakers", hasStore: false },
+      );
+    case "stockx":
+      return calculateStockXFees(
+        salePrice,
+        options.stockx ?? {
+          sellerLevel: 1,
+          hasQuickShip: false,
+          hasSuccessfulShip: false,
+          paymentProcessingWaived: false,
+        },
+      );
+    case "goat":
+      return calculateGoatFees(
+        salePrice,
+        options.goat ?? {
+          sellerRating: 90,
+          isCanadian: false,
+        },
+      );
   }
 }
 
 export function calculateFlip(
   purchasePrice: number,
   salePrices: Partial<Record<Marketplace, number>>,
-  options: FeeOptions
+  options: FeeOptions,
 ): FlipResult[] {
   const results: FlipResult[] = [];
 
@@ -224,7 +281,8 @@ export function calculateFlip(
     const marketplace = mp as Marketplace;
     const breakdown = calculateFees(price, marketplace, options);
     const profit = round2(breakdown.netPayout - purchasePrice);
-    const roi = purchasePrice > 0 ? round2(profit / purchasePrice * 10000) / 10000 : 0;
+    const roi =
+      purchasePrice > 0 ? round2((profit / purchasePrice) * 10000) / 10000 : 0;
 
     results.push({
       marketplace,
@@ -254,7 +312,7 @@ export function formatPercent(decimal: number): string {
 
 export function getDefaultFeeOptions(): FeeOptions {
   return {
-    ebay: { category: 'sneakers', hasStore: false },
+    ebay: { category: "sneakers", hasStore: false },
     stockx: {
       sellerLevel: 1,
       hasQuickShip: false,

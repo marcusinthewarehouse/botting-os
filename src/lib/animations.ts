@@ -1,7 +1,7 @@
 export const transitions = {
-  spring: { type: 'spring' as const, stiffness: 500, damping: 30 },
+  spring: { type: "spring" as const, stiffness: 500, damping: 30 },
   ease: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] as const },
-  snappy: { duration: 0.15, ease: 'easeOut' as const },
+  snappy: { duration: 0.15, ease: "easeOut" as const },
 };
 
 export const pageVariants = {
@@ -23,6 +23,6 @@ export const listItemVariants = {
 };
 
 export const cardHoverClass =
-  'transition-colors duration-150 hover:border-amber-500/30';
+  "transition-colors duration-150 hover:border-amber-500/30";
 
-export const buttonPressClass = 'active:scale-[0.97] transition-transform';
+export const buttonPressClass = "active:scale-[0.97] transition-transform";

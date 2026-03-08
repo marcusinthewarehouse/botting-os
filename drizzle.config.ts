@@ -1,7 +1,7 @@
-import type { Config } from 'drizzle-kit';
+import type { Config } from "drizzle-kit";
 
 export default {
-  schema: './src/lib/db/schema.ts',
-  out: './src/lib/db/migrations',
-  dialect: 'sqlite',
+  schema: "./src/lib/db/schema.ts",
+  out: "./src/lib/db/migrations",
+  dialect: "sqlite",
 } satisfies Config;

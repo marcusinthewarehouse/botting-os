@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Bot, Search, X } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Bot, Search, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export interface FilterState {
   search: string;
@@ -34,7 +34,7 @@ export function FilterBar({ authors, filters, onChange }: FilterBarProps) {
         onChange({ ...filters, search: value });
       }, 300);
     },
-    [filters, onChange]
+    [filters, onChange],
   );
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export function FilterBar({ authors, filters, onChange }: FilterBarProps) {
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       onChange({ ...filters, author: e.target.value });
     },
-    [filters, onChange]
+    [filters, onChange],
   );
 
   const toggleBotOnly = useCallback(() => {
@@ -53,8 +53,8 @@ export function FilterBar({ authors, filters, onChange }: FilterBarProps) {
   }, [filters, onChange]);
 
   const clearAll = useCallback(() => {
-    setLocalSearch('');
-    onChange({ search: '', author: '', botOnly: false });
+    setLocalSearch("");
+    onChange({ search: "", author: "", botOnly: false });
   }, [onChange]);
 
   const hasFilters = filters.search || filters.author || filters.botOnly;
@@ -62,19 +62,19 @@ export function FilterBar({ authors, filters, onChange }: FilterBarProps) {
   return (
     <div className="flex items-center gap-2 flex-wrap">
       <div className="relative flex-1 min-w-[200px]">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-500" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
         <Input
           placeholder="Search messages..."
           value={localSearch}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="pl-9 bg-zinc-900 border-zinc-800 h-8 text-sm"
+          className="pl-9 bg-card border-border h-8 text-sm"
         />
       </div>
 
       <select
         value={filters.author}
         onChange={handleAuthorChange}
-        className="h-8 rounded-md border border-zinc-800 bg-zinc-900 px-2 text-sm text-zinc-300 outline-none focus:border-amber-500/50"
+        className="h-8 rounded-md border border-border bg-card px-2 text-sm text-muted-foreground outline-none focus:border-primary/50"
       >
         <option value="">All authors</option>
         {authors.map((a) => (
@@ -85,11 +85,12 @@ export function FilterBar({ authors, filters, onChange }: FilterBarProps) {
       </select>
 
       <Button
-        variant={filters.botOnly ? 'default' : 'outline'}
+        variant={filters.botOnly ? "default" : "outline"}
         size="sm"
         onClick={toggleBotOnly}
         className={cn(
-          filters.botOnly && 'bg-amber-500/15 text-amber-400 border-amber-500/25 hover:bg-amber-500/25'
+          filters.botOnly &&
+            "bg-primary/15 text-primary border-primary/25 hover:bg-primary/25",
         )}
       >
         <Bot className="size-3.5" data-icon="inline-start" />

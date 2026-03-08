@@ -1,23 +1,35 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { MessageSquare, Radio, RefreshCw, Settings2, Unplug, X, Zap } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
-import { PageHeader } from '@/components/ui/page-header';
-import { PageTransition } from '@/components/page-transition';
-import { EmptyState } from '@/components/ui/empty-state';
-import { ChannelSelector } from '@/components/discord/channel-selector';
-import { DiscordService, type DiscordChannel, type DiscordStatus } from '@/services/discord';
-import * as settingsRepo from '@/lib/db/repositories/settings';
-import { cn } from '@/lib/utils';
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  MessageSquare,
+  Radio,
+  RefreshCw,
+  Settings2,
+  Unplug,
+  X,
+  Zap,
+} from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PageHeader } from "@/components/ui/page-header";
+import { PageTransition } from "@/components/page-transition";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ChannelSelector } from "@/components/discord/channel-selector";
+import {
+  DiscordService,
+  type DiscordChannel,
+  type DiscordStatus,
+} from "@/services/discord";
+import * as settingsRepo from "@/lib/db/repositories/settings";
+import { cn } from "@/lib/utils";
 
-const SETTINGS_KEY_CHANNELS = 'discord_monitored_channels';
-const SETTINGS_KEY_KEYWORDS = 'discord_keywords';
-const SETTINGS_KEY_MONITOR_ALL = 'discord_monitor_all';
+const SETTINGS_KEY_CHANNELS = "discord_monitored_channels";
+const SETTINGS_KEY_KEYWORDS = "discord_keywords";
+const SETTINGS_KEY_MONITOR_ALL = "discord_monitor_all";
 
 export default function DiscordSettingsPage() {
   const [status, setStatus] = useState<DiscordStatus | null>(null);
@@ -25,7 +37,7 @@ export default function DiscordSettingsPage() {
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
   const [monitorAll, setMonitorAll] = useState(false);
   const [keywords, setKeywords] = useState<string[]>([]);
-  const [keywordInput, setKeywordInput] = useState('');
+  const [keywordInput, setKeywordInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState(false);
   const [loadingChannels, setLoadingChannels] = useState(false);
@@ -44,18 +56,22 @@ export default function DiscordSettingsPage() {
       if (channelsJson) {
         try {
           setSelectedChannels(JSON.parse(channelsJson));
-        } catch { /* ignore parse errors */ }
+        } catch {
+          /* ignore parse errors */
+        }
       }
       if (keywordsJson) {
         try {
           setKeywords(JSON.parse(keywordsJson));
-        } catch { /* ignore parse errors */ }
+        } catch {
+          /* ignore parse errors */
+        }
       }
-      if (monitorAllVal === 'true') {
+      if (monitorAllVal === "true") {
         setMonitorAll(true);
       }
     } catch (e) {
-      console.error('Failed to load discord settings:', e);
+      console.error("Failed to load discord settings:", e);
     }
   }, []);
 
@@ -71,7 +87,7 @@ export default function DiscordSettingsPage() {
       const chs = await DiscordService.getChannels();
       setChannels(chs);
     } catch (e) {
-      console.error('Failed to load channels:', e);
+      console.error("Failed to load channels:", e);
     } finally {
       setLoadingChannels(false);
     }
@@ -101,7 +117,7 @@ export default function DiscordSettingsPage() {
         await loadChannels();
       }
     } catch (e) {
-      console.error('Failed to connect:', e);
+      console.error("Failed to connect:", e);
     } finally {
       setConnecting(false);
     }
@@ -110,10 +126,15 @@ export default function DiscordSettingsPage() {
   const handleDisconnect = useCallback(async () => {
     try {
       await DiscordService.stopCdp(true);
-      setStatus({ running: false, debug_mode: false, cdp_connected: false, ws_url: null });
+      setStatus({
+        running: false,
+        debug_mode: false,
+        cdp_connected: false,
+        ws_url: null,
+      });
       setChannels([]);
     } catch (e) {
-      console.error('Failed to disconnect:', e);
+      console.error("Failed to disconnect:", e);
     }
   }, []);
 
@@ -124,9 +145,15 @@ export default function DiscordSettingsPage() {
   const handleSave = useCallback(async () => {
     setSaving(true);
     try {
-      await settingsRepo.set(SETTINGS_KEY_CHANNELS, JSON.stringify(selectedChannels));
+      await settingsRepo.set(
+        SETTINGS_KEY_CHANNELS,
+        JSON.stringify(selectedChannels),
+      );
       await settingsRepo.set(SETTINGS_KEY_KEYWORDS, JSON.stringify(keywords));
-      await settingsRepo.set(SETTINGS_KEY_MONITOR_ALL, monitorAll ? 'true' : 'false');
+      await settingsRepo.set(
+        SETTINGS_KEY_MONITOR_ALL,
+        monitorAll ? "true" : "false",
+      );
 
       if (status?.cdp_connected) {
         const ids = monitorAll ? [] : selectedChannels;
@@ -135,7 +162,7 @@ export default function DiscordSettingsPage() {
 
       setDirty(false);
     } catch (e) {
-      console.error('Failed to save settings:', e);
+      console.error("Failed to save settings:", e);
     } finally {
       setSaving(false);
     }
@@ -155,7 +182,7 @@ export default function DiscordSettingsPage() {
     const trimmed = keywordInput.trim().toLowerCase();
     if (!trimmed || keywords.includes(trimmed)) return;
     setKeywords((prev) => [...prev, trimmed]);
-    setKeywordInput('');
+    setKeywordInput("");
     setDirty(true);
   }, [keywordInput, keywords]);
 
@@ -166,12 +193,12 @@ export default function DiscordSettingsPage() {
 
   const handleKeywordKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter') {
+      if (e.key === "Enter") {
         e.preventDefault();
         addKeyword();
       }
     },
-    [addKeyword]
+    [addKeyword],
   );
 
   const isConnected = status?.cdp_connected ?? false;
@@ -203,20 +230,20 @@ export default function DiscordSettingsPage() {
             <div className="flex items-center gap-3">
               <div
                 className={cn(
-                  'size-2.5 rounded-full',
-                  isConnected ? 'bg-green-400' : 'bg-zinc-500'
+                  "size-2.5 rounded-full",
+                  isConnected ? "bg-green-400" : "bg-muted-foreground",
                 )}
               />
               <div>
-                <p className="text-sm font-medium text-zinc-50">
-                  {isConnected ? 'Connected to Discord' : 'Not connected'}
+                <p className="text-sm font-medium text-foreground">
+                  {isConnected ? "Connected to Discord" : "Not connected"}
                 </p>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-muted-foreground">
                   {isConnected
-                    ? 'CDP session active - channels available'
+                    ? "CDP session active - channels available"
                     : status?.running
-                      ? 'Discord is running but CDP is not active'
-                      : 'Discord is not running'}
+                      ? "Discord is running but CDP is not active"
+                      : "Discord is not running"}
                 </p>
               </div>
             </div>
@@ -229,7 +256,7 @@ export default function DiscordSettingsPage() {
             ) : (
               <Button size="sm" onClick={handleConnect} disabled={connecting}>
                 <Zap className="size-3.5" data-icon="inline-start" />
-                {connecting ? 'Connecting...' : 'Connect Discord'}
+                {connecting ? "Connecting..." : "Connect Discord"}
               </Button>
             )}
           </div>
@@ -239,8 +266,10 @@ export default function DiscordSettingsPage() {
         <Card className="p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Radio className="size-4 text-zinc-400" />
-              <h3 className="text-sm font-medium text-zinc-50">Monitored Channels</h3>
+              <Radio className="size-4 text-muted-foreground" />
+              <h3 className="text-sm font-medium text-foreground">
+                Monitored Channels
+              </h3>
             </div>
             {isConnected && (
               <Button
@@ -249,7 +278,9 @@ export default function DiscordSettingsPage() {
                 onClick={handleRefreshChannels}
                 disabled={loadingChannels}
               >
-                <RefreshCw className={cn('size-3.5', loadingChannels && 'animate-spin')} />
+                <RefreshCw
+                  className={cn("size-3.5", loadingChannels && "animate-spin")}
+                />
               </Button>
             )}
           </div>
@@ -290,11 +321,12 @@ export default function DiscordSettingsPage() {
         {/* Keywords */}
         <Card className="p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Settings2 className="size-4 text-zinc-400" />
-            <h3 className="text-sm font-medium text-zinc-50">Keywords</h3>
+            <Settings2 className="size-4 text-muted-foreground" />
+            <h3 className="text-sm font-medium text-foreground">Keywords</h3>
           </div>
-          <p className="text-xs text-zinc-500 mb-3">
-            Add keywords to highlight in the Discord feed. Messages matching these terms will be flagged.
+          <p className="text-xs text-muted-foreground mb-3">
+            Add keywords to highlight in the Discord feed. Messages matching
+            these terms will be flagged.
           </p>
 
           <div className="flex gap-2 mb-3">
@@ -303,9 +335,14 @@ export default function DiscordSettingsPage() {
               value={keywordInput}
               onChange={(e) => setKeywordInput(e.target.value)}
               onKeyDown={handleKeywordKeyDown}
-              className="bg-zinc-900 border-zinc-800 h-8 text-sm flex-1"
+              className="bg-card border-border h-8 text-sm flex-1"
             />
-            <Button variant="outline" size="sm" onClick={addKeyword} disabled={!keywordInput.trim()}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={addKeyword}
+              disabled={!keywordInput.trim()}
+            >
               Add
             </Button>
           </div>
@@ -315,13 +352,13 @@ export default function DiscordSettingsPage() {
               {keywords.map((kw) => (
                 <span
                   key={kw}
-                  className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 text-amber-400 border border-amber-500/25 px-2 py-0.5 text-xs"
+                  className="inline-flex items-center gap-1 rounded-md bg-primary/15 text-primary border border-primary/25 px-2 py-0.5 text-xs"
                 >
                   {kw}
                   <button
                     type="button"
                     onClick={() => removeKeyword(kw)}
-                    className="text-amber-500/60 hover:text-amber-400 transition-colors"
+                    className="text-primary/60 hover:text-primary transition-colors"
                   >
                     <X className="size-3" />
                   </button>
@@ -329,17 +366,17 @@ export default function DiscordSettingsPage() {
               ))}
             </div>
           ) : (
-            <p className="text-xs text-zinc-600">No keywords set</p>
+            <p className="text-xs text-muted-foreground">No keywords set</p>
           )}
         </Card>
 
         {/* Save */}
         <div className="flex items-center gap-3">
           <Button onClick={handleSave} disabled={saving || !dirty}>
-            {saving ? 'Saving...' : 'Save Settings'}
+            {saving ? "Saving..." : "Save Settings"}
           </Button>
           {dirty && (
-            <span className="text-xs text-amber-400">Unsaved changes</span>
+            <span className="text-xs text-primary">Unsaved changes</span>
           )}
         </div>
       </div>

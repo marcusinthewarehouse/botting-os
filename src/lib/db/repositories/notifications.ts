@@ -1,7 +1,7 @@
-import { db } from '../client';
-import { notifications } from '../schema';
-import { eq, desc, sql } from 'drizzle-orm';
-import type { Notification } from '../types';
+import { db } from "../client";
+import { notifications } from "../schema";
+import { eq, desc, sql } from "drizzle-orm";
+import type { Notification } from "../types";
 
 export async function getAll(limit = 20): Promise<Notification[]> {
   return db
@@ -20,7 +20,7 @@ export async function getUnreadCount(): Promise<number> {
 }
 
 export async function create(
-  data: Omit<Notification, 'id' | 'read'>
+  data: Omit<Notification, "id" | "read">,
 ): Promise<void> {
   await db.insert(notifications).values({ ...data, read: false });
 }

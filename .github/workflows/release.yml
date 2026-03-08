@@ -3,7 +3,7 @@ name: Release Build
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   build-macos:
@@ -16,8 +16,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -25,7 +25,7 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: 'src-tauri -> target'
+          workspaces: "src-tauri -> target"
 
       - name: Install dependencies
         run: npm ci
@@ -36,8 +36,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: 'BottingOS ${{ github.ref_name }}'
-          releaseBody: 'See the assets below to download and install. Note - this is an unsigned build. See INSTALL.md for instructions.'
+          releaseName: "BottingOS ${{ github.ref_name }}"
+          releaseBody: "See the assets below to download and install. Note - this is an unsigned build. See INSTALL.md for instructions."
           releaseDraft: true
           prerelease: false
 
@@ -51,8 +51,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -60,7 +60,7 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: 'src-tauri -> target'
+          workspaces: "src-tauri -> target"
 
       - name: Install dependencies
         run: npm ci
@@ -71,7 +71,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: 'BottingOS ${{ github.ref_name }}'
-          releaseBody: 'See the assets below to download and install.'
+          releaseName: "BottingOS ${{ github.ref_name }}"
+          releaseBody: "See the assets below to download and install."
           releaseDraft: true
           prerelease: false

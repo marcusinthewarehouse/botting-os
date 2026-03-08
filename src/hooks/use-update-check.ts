@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { IS_TAURI } from '@/lib/db/client';
+import { useEffect, useState } from "react";
+import { IS_TAURI } from "@/lib/db/client";
 
 interface UpdateInfo {
   available: boolean;
@@ -14,7 +14,7 @@ export function useUpdateCheck() {
 
     async function check() {
       try {
-        const { check } = await import('@tauri-apps/plugin-updater');
+        const { check } = await import("@tauri-apps/plugin-updater");
         const result = await check();
         if (result?.available) {
           setUpdate({ available: true, version: result.version });

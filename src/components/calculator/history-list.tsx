@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { Trash2, Clock } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { EmptyState } from '@/components/ui/empty-state';
-import type { CalculatorHistory } from '@/lib/db/types';
+import { Trash2, Clock } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import type { CalculatorHistory } from "@/lib/db/types";
 
 interface HistoryListProps {
   history: CalculatorHistory[];
@@ -12,18 +12,23 @@ interface HistoryListProps {
 }
 
 function formatDate(date: Date | null): string {
-  if (!date) return '';
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
+  if (!date) return "";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
   }).format(date);
 }
 
-function getBestMarketplace(resultsJson: string): { name: string; profit: number } | null {
+function getBestMarketplace(
+  resultsJson: string,
+): { name: string; profit: number } | null {
   try {
-    const results = JSON.parse(resultsJson) as Record<string, { profit: number }>;
+    const results = JSON.parse(resultsJson) as Record<
+      string,
+      { profit: number }
+    >;
     let best: { name: string; profit: number } | null = null;
     for (const [name, data] of Object.entries(results)) {
       if (!best || data.profit > best.profit) {
@@ -55,14 +60,14 @@ export function HistoryList({ history, onSelect, onDelete }: HistoryListProps) {
           <Card
             key={entry.id}
             onClick={() => onSelect(entry)}
-            className="flex items-center justify-between px-4 py-3 bg-black border-white/[0.06] cursor-pointer transition-colors duration-150 hover:border-amber-500/30 group"
+            className="flex items-center justify-between px-4 py-3 bg-black border-border cursor-pointer transition-colors duration-150 hover:border-primary/30 group"
           >
             <div className="flex items-center gap-4 min-w-0">
               <div className="min-w-0">
-                <p className="text-sm font-medium text-zinc-200 truncate">
-                  {entry.productName || 'Untitled'}
+                <p className="text-sm font-medium text-foreground/80 truncate">
+                  {entry.productName || "Untitled"}
                 </p>
-                <div className="flex items-center gap-3 text-xs text-zinc-500">
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="font-mono tabular-nums">
                     ${entry.purchasePrice.toFixed(2)} cost
                   </span>
@@ -82,9 +87,9 @@ export function HistoryList({ history, onSelect, onDelete }: HistoryListProps) {
                 e.stopPropagation();
                 onDelete(entry.id);
               }}
-              className="opacity-0 group-hover:opacity-100 p-1.5 rounded hover:bg-zinc-800 transition-all duration-150"
+              className="opacity-0 group-hover:opacity-100 p-1.5 rounded hover:bg-muted transition-all duration-150"
             >
-              <Trash2 className="size-3.5 text-zinc-500 hover:text-red-400" />
+              <Trash2 className="size-3.5 text-muted-foreground hover:text-red-400" />
             </button>
           </Card>
         );

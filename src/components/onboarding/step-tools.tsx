@@ -1,16 +1,8 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-const TOOLS = [
-  'Cybersole',
-  'Valor',
-  'NSB',
-  'Wrath',
-  'Kodai',
-  'AYCD',
-  'Other',
-];
+const TOOLS = ["Cybersole", "Valor", "NSB", "Wrath", "Kodai", "AYCD", "Other"];
 
 interface StepToolsProps {
   selected: string[];
@@ -28,8 +20,10 @@ export function StepTools({ selected, onChange }: StepToolsProps) {
 
   return (
     <div className="flex flex-col items-center">
-      <h2 className="text-2xl font-semibold text-zinc-50 mb-2">What tools do you use?</h2>
-      <p className="text-sm text-zinc-400 mb-8 max-w-md text-center">
+      <h2 className="text-2xl font-semibold text-foreground mb-2">
+        What tools do you use?
+      </h2>
+      <p className="text-sm text-muted-foreground mb-8 max-w-md text-center">
         Select your bots and tools. We will set up webhook templates for them.
       </p>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 w-full max-w-lg">
@@ -40,10 +34,10 @@ export function StepTools({ selected, onChange }: StepToolsProps) {
               key={tool}
               onClick={() => toggle(tool)}
               className={cn(
-                'rounded-lg border px-4 py-3 text-sm font-medium transition-colors duration-150',
+                "rounded-lg border px-4 py-3 text-sm font-medium transition-colors duration-150",
                 isSelected
-                  ? 'border-amber-500 bg-amber-500/10 text-zinc-50'
-                  : 'border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
+                  ? "border-primary bg-primary/10 text-foreground"
+                  : "border-border bg-card/50 text-muted-foreground hover:border-border hover:text-foreground/80",
               )}
             >
               {tool}
