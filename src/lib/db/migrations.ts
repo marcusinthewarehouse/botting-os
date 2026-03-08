@@ -95,6 +95,28 @@ const migrations: { name: string; sql: string }[] = [
       )
     `,
   },
+  {
+    name: '0002_price_alerts_v2',
+    sql: `
+      DROP TABLE IF EXISTS price_alerts;
+      CREATE TABLE IF NOT EXISTS price_alerts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        product_name TEXT NOT NULL,
+        style_id TEXT NOT NULL,
+        marketplace TEXT NOT NULL,
+        size TEXT,
+        target_price REAL NOT NULL,
+        direction TEXT NOT NULL,
+        current_price REAL,
+        recurring INTEGER DEFAULT 0,
+        triggered INTEGER DEFAULT 0,
+        triggered_at INTEGER,
+        last_checked_at INTEGER,
+        image_url TEXT,
+        created_at INTEGER NOT NULL
+      )
+    `,
+  },
 ];
 
 export async function runMigrations(): Promise<void> {

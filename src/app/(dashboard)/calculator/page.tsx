@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Calculator, Settings2 } from 'lucide-react';
+import { Bell, Calculator, Settings2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,6 +14,7 @@ import { ProductSearch } from '@/components/calculator/product-search';
 import { PriceComparison, type MarketplacePrices } from '@/components/calculator/price-comparison';
 import { FeeDetails } from '@/components/calculator/fee-details';
 import { HistoryList } from '@/components/calculator/history-list';
+import { PriceAlertDialog } from '@/components/calculator/price-alert-dialog';
 import { calculatorRepo } from '@/lib/db/repositories';
 import { getDefaultFeeOptions, calculateFlip, type FeeOptions, type Marketplace } from '@/lib/fees';
 import type { CalculatorHistory } from '@/lib/db/types';
@@ -32,6 +33,7 @@ export default function CalculatorPage() {
   });
   const [feeOptions, setFeeOptions] = useState<FeeOptions>(getDefaultFeeOptions);
   const [showSettings, setShowSettings] = useState(false);
+  const [showAlertDialog, setShowAlertDialog] = useState(false);
   const [history, setHistory] = useState<CalculatorHistory[]>([]);
 
   const purchase = parseFloat(purchasePrice) || 0;
@@ -129,6 +131,7 @@ export default function CalculatorPage() {
         title="Flip Calculator"
         description="Search products, compare marketplace prices, and calculate profit."
         actions={[
+          { label: 'Alerts', onClick: () => setShowAlertDialog(true), variant: 'outline' },
           { label: 'Clear', onClick: handleClear, variant: 'outline' },
           { label: 'Save', onClick: handleSave },
         ]}
@@ -243,6 +246,17 @@ export default function CalculatorPage() {
           />
         </div>
       </div>
+
+      <PriceAlertDialog
+        open={showAlertDialog}
+        onOpenChange={setShowAlertDialog}
+        productName={selectedProduct?.name}
+        styleId={selectedProduct?.style_id}
+        marketplace="stockx"
+        currentPrice={marketplacePrices.stockx || marketplacePrices.goat || marketplacePrices.ebay}
+        size={selectedSize || undefined}
+        imageUrl={selectedProduct?.thumbnail}
+      />
     </PageTransition>
   );
 }

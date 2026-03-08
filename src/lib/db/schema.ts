@@ -92,13 +92,19 @@ export const settings = sqliteTable('settings', {
 
 export const priceAlerts = sqliteTable('price_alerts', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  productId: text('product_id'),
   productName: text('product_name').notNull(),
+  styleId: text('style_id').notNull(),
+  marketplace: text('marketplace').notNull(),
+  size: text('size'),
   targetPrice: real('target_price').notNull(),
   direction: text('direction').notNull(),
-  marketplace: text('marketplace'),
-  active: integer('active', { mode: 'boolean' }).default(true),
-  createdAt: integer('created_at', { mode: 'timestamp' }),
+  currentPrice: real('current_price'),
+  recurring: integer('recurring', { mode: 'boolean' }).default(false),
+  triggered: integer('triggered', { mode: 'boolean' }).default(false),
+  triggeredAt: integer('triggered_at', { mode: 'timestamp' }),
+  lastCheckedAt: integer('last_checked_at', { mode: 'timestamp' }),
+  imageUrl: text('image_url'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 });
 
 export const emailsRelations = relations(emails, ({ many }) => ({

@@ -6,12 +6,15 @@ import { Titlebar } from '@/components/titlebar';
 import { AppSidebar } from '@/components/app-sidebar';
 import { CommandPalette } from '@/components/command-palette';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { usePriceAlertPolling } from '@/hooks/use-price-alerts';
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  usePriceAlertPolling();
+
   useEffect(() => {
     function handleContextMenu(e: MouseEvent) {
       const target = e.target as HTMLElement;
