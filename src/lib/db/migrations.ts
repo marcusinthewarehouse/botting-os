@@ -133,21 +133,6 @@ const migrations: { name: string; sql: string }[] = [
     `,
   },
   {
-    name: '0005_resources',
-    sql: `
-      CREATE TABLE IF NOT EXISTS resources (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        url TEXT NOT NULL,
-        description TEXT,
-        category TEXT NOT NULL,
-        is_custom INTEGER DEFAULT 0,
-        icon TEXT,
-        created_at INTEGER NOT NULL
-      )
-    `,
-  },
-  {
     name: '0004_drops',
     sql: `
       CREATE TABLE IF NOT EXISTS drops (
@@ -165,6 +150,31 @@ const migrations: { name: string; sql: string }[] = [
         source TEXT DEFAULT 'manual',
         created_at INTEGER NOT NULL
       )
+    `,
+  },
+  {
+    name: '0005_resources',
+    sql: `
+      CREATE TABLE IF NOT EXISTS resources (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        url TEXT NOT NULL,
+        description TEXT,
+        category TEXT NOT NULL,
+        is_custom INTEGER DEFAULT 0,
+        icon TEXT,
+        created_at INTEGER NOT NULL
+      )
+    `,
+  },
+  {
+    name: '0006_inventory_missing_columns',
+    sql: `
+      ALTER TABLE inventory_items ADD COLUMN sku TEXT;
+      ALTER TABLE inventory_items ADD COLUMN size TEXT;
+      ALTER TABLE inventory_items ADD COLUMN location TEXT;
+      ALTER TABLE inventory_items ADD COLUMN image_url TEXT;
+      ALTER TABLE inventory_items ADD COLUMN notes TEXT
     `,
   },
 ];
