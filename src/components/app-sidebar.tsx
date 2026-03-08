@@ -41,13 +41,12 @@ const activeItems: NavItem[] = [
   { title: 'Vault', icon: Lock, path: '/vault' },
   { title: 'VCC', icon: CreditCard, path: '/vcc' },
   { title: 'Discord', icon: MessageSquare, path: '/discord' },
+  { title: 'Analytics', icon: BarChart3, path: '/analytics' },
+  { title: 'Calendar', icon: Calendar, path: '/calendar' },
+  { title: 'Resources', icon: BookOpen, path: '/resources' },
 ];
 
-const comingSoonItems: NavItem[] = [
-  { title: 'Analytics', icon: BarChart3, path: '/analytics', comingSoon: true },
-  { title: 'Calendar', icon: Calendar, path: '/calendar', comingSoon: true },
-  { title: 'Resources', icon: BookOpen, path: '/resources', comingSoon: true },
-];
+const comingSoonItems: NavItem[] = [];
 
 function NavLink({ item, collapsed, isActive }: { item: NavItem; collapsed: boolean; isActive: boolean }) {
   const content = (
