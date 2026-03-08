@@ -1,0 +1,37 @@
+[package]
+name = "bottingos"
+version = "0.1.0"
+description = "Command center for botting operations"
+authors = ["Marcus Hooshmand"]
+license = "MIT"
+repository = ""
+edition = "2021"
+rust-version = "1.77.2"
+
+[lib]
+name = "app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.5.6", features = [] }
+
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+log = "0.4"
+tauri = { version = "2.10.3", features = [] }
+tauri-plugin-log = "2"
+tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+tauri-plugin-updater = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-process = "2"
+tauri-plugin-store = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-http = "2"
+tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
+sysinfo = "0.33"
+reqwest = { version = "0.12", features = ["json", "native-tls"] }
+tokio = { version = "1", features = ["full"] }
+urlencoding = "2"
+base64 = "0.22"

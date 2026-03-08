@@ -10,6 +10,12 @@ pub fn run() {
     .plugin(tauri_plugin_http::init())
     .plugin(tauri_plugin_dialog::init())
     .plugin(tauri_plugin_process::init())
+    .manage(commands::pricing::PricingState::new())
+    .invoke_handler(tauri::generate_handler![
+      commands::pricing::search_products,
+      commands::pricing::get_product_prices,
+      commands::pricing::search_ebay,
+    ])
     .setup(|app| {
       if cfg!(debug_assertions) {
         app.handle().plugin(
