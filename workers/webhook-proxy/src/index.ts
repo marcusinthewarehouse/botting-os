@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Env, DiscordWebhookPayload, WebhookTokenRow } from './types';
-import { parseWebhook } from './parsers';
+import { parseWebhook } from './parsers/index';
 
 const RATE_LIMIT = 60;
 const RATE_WINDOW_MS = 60_000;
