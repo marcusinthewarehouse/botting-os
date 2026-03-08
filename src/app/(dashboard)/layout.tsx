@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { CryptoProvider } from '@/components/providers/crypto-provider';
 import { Titlebar } from '@/components/titlebar';
 import { AppSidebar } from '@/components/app-sidebar';
@@ -8,13 +9,35 @@ import { CommandPalette } from '@/components/command-palette';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { usePriceAlertPolling } from '@/hooks/use-price-alerts';
 import { checkReminders } from '@/lib/reminders';
+import { settingsRepo } from '@/lib/db/repositories';
+import { IS_TAURI } from '@/lib/db/client';
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  const [ready, setReady] = useState(!IS_TAURI);
+
   usePriceAlertPolling();
+
+  useEffect(() => {
+    async function checkOnboarding() {
+      if (!IS_TAURI) return;
+      try {
+        const value = await settingsRepo.get('onboarding_complete');
+        if (!value || value !== 'true') {
+          router.replace('/onboarding');
+          return;
+        }
+      } catch {
+        // DB not ready - allow dashboard to load
+      }
+      setReady(true);
+    }
+    checkOnboarding();
+  }, [router]);
 
   useEffect(() => {
     checkReminders();
@@ -34,6 +57,10 @@ export default function DashboardLayout({
     document.addEventListener('contextmenu', handleContextMenu);
     return () => document.removeEventListener('contextmenu', handleContextMenu);
   }, []);
+
+  if (!ready) {
+    return <div className="min-h-screen bg-[#09090B]" />;
+  }
 
   return (
     <TooltipProvider delay={200}>
