@@ -98,8 +98,8 @@ const migrations: { name: string; sql: string }[] = [
 ];
 
 export async function runMigrations(): Promise<void> {
-  const Database = (await import('@tauri-apps/plugin-sql')).default;
-  const sqlite = await Database.load('sqlite:bottingos.db');
+  const { getSqlite } = await import('./client');
+  const sqlite = await getSqlite();
 
   await sqlite.execute(`
     CREATE TABLE IF NOT EXISTS __drizzle_migrations (
