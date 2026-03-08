@@ -7,6 +7,7 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { CommandPalette } from '@/components/command-palette';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { usePriceAlertPolling } from '@/hooks/use-price-alerts';
+import { checkReminders } from '@/lib/reminders';
 
 export default function DashboardLayout({
   children,
@@ -14,6 +15,12 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   usePriceAlertPolling();
+
+  useEffect(() => {
+    checkReminders();
+    const interval = setInterval(checkReminders, 60_000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     function handleContextMenu(e: MouseEvent) {

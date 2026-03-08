@@ -7,3 +7,6 @@ export * as calculatorRepo from './calculator';
 export * as trackerRepo from './tracker';
 export * as settingsRepo from './settings';
 export * as priceAlertsRepo from './price-alerts';
+export * as dropsRepo from './drops';
+export * as notificationsRepo from './notifications';
+export * as resourcesRepo from './resources';

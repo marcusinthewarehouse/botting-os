@@ -3,6 +3,7 @@
 import { useCallback } from 'react';
 import { Minus, Square, X } from 'lucide-react';
 import { IS_TAURI } from '@/lib/db/client';
+import { NotificationCenter } from '@/components/notification-center';
 
 export function Titlebar() {
   const handleMinimize = useCallback(async () => {
@@ -34,28 +35,33 @@ export function Titlebar() {
       <div data-tauri-drag-region className="pl-3 text-xs font-medium text-zinc-400">
         BottingOS
       </div>
-      {IS_TAURI && (
-        <div className="flex h-full">
-          <button
-            onClick={handleMinimize}
-            className="flex items-center justify-center w-11 h-full hover:bg-zinc-800 transition-colors duration-150"
-          >
-            <Minus className="size-3.5 text-zinc-400" />
-          </button>
-          <button
-            onClick={handleMaximize}
-            className="flex items-center justify-center w-11 h-full hover:bg-zinc-800 transition-colors duration-150"
-          >
-            <Square className="size-3 text-zinc-400" />
-          </button>
-          <button
-            onClick={handleClose}
-            className="flex items-center justify-center w-11 h-full hover:bg-red-500/80 transition-colors duration-150"
-          >
-            <X className="size-3.5 text-zinc-400" />
-          </button>
+      <div className="flex h-full items-center">
+        <div className="mr-2">
+          <NotificationCenter />
         </div>
-      )}
+        {IS_TAURI && (
+          <>
+            <button
+              onClick={handleMinimize}
+              className="flex items-center justify-center w-11 h-full hover:bg-zinc-800 transition-colors duration-150"
+            >
+              <Minus className="size-3.5 text-zinc-400" />
+            </button>
+            <button
+              onClick={handleMaximize}
+              className="flex items-center justify-center w-11 h-full hover:bg-zinc-800 transition-colors duration-150"
+            >
+              <Square className="size-3 text-zinc-400" />
+            </button>
+            <button
+              onClick={handleClose}
+              className="flex items-center justify-center w-11 h-full hover:bg-red-500/80 transition-colors duration-150"
+            >
+              <X className="size-3.5 text-zinc-400" />
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -112,6 +112,44 @@ export const priceAlerts = sqliteTable('price_alerts', {
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 });
 
+export const drops = sqliteTable('drops', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  productName: text('product_name').notNull(),
+  brand: text('brand'),
+  retailer: text('retailer'),
+  category: text('category'),
+  dropDate: integer('drop_date', { mode: 'timestamp' }).notNull(),
+  dropTime: text('drop_time'),
+  url: text('url'),
+  notes: text('notes'),
+  reminderMinutes: integer('reminder_minutes'),
+  reminded: integer('reminded', { mode: 'boolean' }).default(false),
+  source: text('source').default('manual'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
+export const notifications = sqliteTable('notifications', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  type: text('type').notNull(),
+  title: text('title').notNull(),
+  body: text('body').notNull(),
+  read: integer('read', { mode: 'boolean' }).default(false),
+  actionUrl: text('action_url'),
+  metadata: text('metadata', { mode: 'json' }).$type<Record<string, unknown>>(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
+export const resources = sqliteTable('resources', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  url: text('url').notNull(),
+  description: text('description'),
+  category: text('category').notNull(),
+  isCustom: integer('is_custom', { mode: 'boolean' }).default(false),
+  icon: text('icon'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
 export const emailsRelations = relations(emails, ({ many }) => ({
   vccs: many(vccs),
 }));

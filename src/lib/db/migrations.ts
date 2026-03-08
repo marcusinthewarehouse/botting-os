@@ -117,6 +117,56 @@ const migrations: { name: string; sql: string }[] = [
       )
     `,
   },
+  {
+    name: '0003_notifications',
+    sql: `
+      CREATE TABLE IF NOT EXISTS notifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        type TEXT NOT NULL,
+        title TEXT NOT NULL,
+        body TEXT NOT NULL,
+        read INTEGER DEFAULT 0,
+        action_url TEXT,
+        metadata TEXT,
+        created_at INTEGER NOT NULL
+      )
+    `,
+  },
+  {
+    name: '0005_resources',
+    sql: `
+      CREATE TABLE IF NOT EXISTS resources (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        url TEXT NOT NULL,
+        description TEXT,
+        category TEXT NOT NULL,
+        is_custom INTEGER DEFAULT 0,
+        icon TEXT,
+        created_at INTEGER NOT NULL
+      )
+    `,
+  },
+  {
+    name: '0004_drops',
+    sql: `
+      CREATE TABLE IF NOT EXISTS drops (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        product_name TEXT NOT NULL,
+        brand TEXT,
+        retailer TEXT,
+        category TEXT,
+        drop_date INTEGER NOT NULL,
+        drop_time TEXT,
+        url TEXT,
+        notes TEXT,
+        reminder_minutes INTEGER,
+        reminded INTEGER DEFAULT 0,
+        source TEXT DEFAULT 'manual',
+        created_at INTEGER NOT NULL
+      )
+    `,
+  },
 ];
 
 export async function runMigrations(): Promise<void> {

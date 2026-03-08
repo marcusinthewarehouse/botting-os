@@ -27,3 +27,12 @@ export type NewSettings = InferInsertModel<typeof schema.settings>;
 
 export type PriceAlert = InferSelectModel<typeof schema.priceAlerts>;
 export type NewPriceAlert = InferInsertModel<typeof schema.priceAlerts>;
+
+export type Drop = InferSelectModel<typeof schema.drops>;
+export type NewDrop = InferInsertModel<typeof schema.drops>;
+
+export type Notification = InferSelectModel<typeof schema.notifications>;
+export type NewNotification = InferInsertModel<typeof schema.notifications>;
+
+export type Resource = InferSelectModel<typeof schema.resources>;
+export type NewResource = InferInsertModel<typeof schema.resources>;
