@@ -8,12 +8,10 @@ export async function get(key: string): Promise<string | undefined> {
 }
 
 export async function set(key: string, value: string): Promise<void> {
-  const existing = await get(key);
-  if (existing !== undefined) {
-    await db.update(settings).set({ value }).where(eq(settings.key, key));
-  } else {
-    await db.insert(settings).values({ key, value });
-  }
+  await db.insert(settings).values({ key, value }).onConflictDoUpdate({
+    target: settings.key,
+    set: { value },
+  });
 }
 
 export async function getAll(): Promise<Record<string, string>> {
