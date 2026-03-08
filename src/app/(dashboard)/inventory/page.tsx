@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Boxes, Plus } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
+import { PageTransition } from '@/components/page-transition';
 import { InventoryTable } from '@/components/inventory/inventory-table';
 import { CategoryFilter } from '@/components/inventory/category-filter';
 import { AddItemForm, type AddItemData } from '@/components/inventory/add-item-form';
@@ -103,23 +104,26 @@ export default function InventoryPage() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <div className="h-8 w-48 bg-zinc-900 rounded animate-pulse" />
-        <div className="flex gap-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-16 w-32 bg-zinc-900 rounded-lg animate-pulse" />
-          ))}
+      <PageTransition>
+        <div className="space-y-4">
+          <div className="h-8 w-48 bg-zinc-800 rounded animate-pulse" />
+          <div className="flex gap-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-16 w-32 bg-zinc-800/60 rounded-lg animate-pulse" />
+            ))}
+          </div>
+          <div className="space-y-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-10 bg-zinc-800/60 rounded animate-pulse" />
+            ))}
+          </div>
         </div>
-        <div className="space-y-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-10 bg-zinc-900 rounded animate-pulse" />
-          ))}
-        </div>
-      </div>
+      </PageTransition>
     );
   }
 
   return (
+    <PageTransition>
     <div className="space-y-4">
       <Toaster
         position="bottom-right"
@@ -190,5 +194,6 @@ export default function InventoryPage() {
         />
       )}
     </div>
+    </PageTransition>
   );
 }

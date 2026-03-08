@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { Package, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
+import { PageTransition } from '@/components/page-transition';
 import { useSupabaseAuth } from '@/hooks/use-supabase-auth';
 import { useCheckoutFeed, formatPrice } from '@/hooks/use-checkout-feed';
 import type { CheckoutEvent } from '@/hooks/use-checkout-feed';
@@ -35,15 +36,18 @@ export default function OrdersPage() {
 
   if (authLoading) {
     return (
-      <div className="space-y-4">
-        <div className="h-8 w-48 bg-zinc-900 rounded animate-pulse" />
-        <div className="h-64 bg-zinc-900 rounded animate-pulse" />
-      </div>
+      <PageTransition>
+        <div className="space-y-4">
+          <div className="h-8 w-48 bg-zinc-800 rounded animate-pulse" />
+          <div className="h-64 bg-zinc-800/60 rounded animate-pulse" />
+        </div>
+      </PageTransition>
     );
   }
 
   if (!user) {
     return (
+      <PageTransition>
       <div className="max-w-sm mx-auto mt-16 space-y-6">
         <div className="text-center">
           <Package className="h-10 w-10 text-zinc-600 mx-auto mb-3" />
@@ -76,10 +80,12 @@ export default function OrdersPage() {
           </button>
         </form>
       </div>
+      </PageTransition>
     );
   }
 
   return (
+    <PageTransition>
     <div className="space-y-4">
       <Toaster
         position="bottom-right"
@@ -136,5 +142,6 @@ export default function OrdersPage() {
         <OrderTable events={events} loading={feedLoading} />
       )}
     </div>
+    </PageTransition>
   );
 }

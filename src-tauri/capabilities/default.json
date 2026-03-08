@@ -16,6 +16,10 @@
     "http:default",
     "dialog:default",
     "process:default",
-    "updater:default"
+    "updater:default",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-set-focus",
+    "core:tray:default"
   ]
 }
