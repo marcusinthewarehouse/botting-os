@@ -48,6 +48,11 @@ export default function InventoryPage() {
         name: data.name,
         category: data.category,
         purchasePrice: data.purchasePrice,
+        sku: data.sku ?? null,
+        size: data.size ?? null,
+        location: data.location ?? null,
+        imageUrl: data.imageUrl ?? null,
+        notes: data.notes ?? null,
         status: 'in_stock',
       });
       toast.success(`Added "${data.name}"`);

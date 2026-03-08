@@ -13,6 +13,11 @@ export interface AddItemData {
   name: string;
   category: string;
   purchasePrice: number;
+  sku?: string;
+  size?: string;
+  location?: string;
+  imageUrl?: string;
+  notes?: string;
   status?: string;
   listedUrl?: string;
   listedPrice?: number;
@@ -21,13 +26,33 @@ export interface AddItemData {
 const CATEGORIES = ['sneakers', 'pokemon', 'funko', 'supreme', 'other'];
 const CONDITIONS = ['new', 'used', 'open_box'];
 
+const inputClass = 'w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-50 placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-amber-500/50';
+const selectClass = 'w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:ring-1 focus:ring-amber-500/50';
+
 export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
   const [name, setName] = useState('');
   const [category, setCategory] = useState('sneakers');
   const [purchasePrice, setPurchasePrice] = useState('');
   const [condition, setCondition] = useState('new');
+  const [sku, setSku] = useState('');
+  const [size, setSize] = useState('');
+  const [location, setLocation] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [notes, setNotes] = useState('');
 
   if (!open) return null;
+
+  function resetForm() {
+    setName('');
+    setCategory('sneakers');
+    setPurchasePrice('');
+    setCondition('new');
+    setSku('');
+    setSize('');
+    setLocation('');
+    setImageUrl('');
+    setNotes('');
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -38,19 +63,21 @@ export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
       name: name.trim(),
       category,
       purchasePrice: price,
+      sku: sku.trim() || undefined,
+      size: size.trim() || undefined,
+      location: location.trim() || undefined,
+      imageUrl: imageUrl.trim() || undefined,
+      notes: notes.trim() || undefined,
     });
 
-    setName('');
-    setCategory('sneakers');
-    setPurchasePrice('');
-    setCondition('new');
+    resetForm();
     onClose();
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-md rounded-lg border border-zinc-800 bg-zinc-950 p-6 shadow-lg">
+      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-950 p-6 shadow-lg">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-zinc-50">Add Inventory Item</h2>
           <button onClick={onClose} className="text-zinc-500 hover:text-zinc-300 transition-colors">
@@ -66,9 +93,32 @@ export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Nike Dunk Low Panda"
-              className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-50 placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-amber-500/50"
+              className={inputClass}
               required
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs text-zinc-500 mb-1">SKU</label>
+              <input
+                type="text"
+                value={sku}
+                onChange={(e) => setSku(e.target.value)}
+                placeholder="DD1391-100"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-zinc-500 mb-1">Size</label>
+              <input
+                type="text"
+                value={size}
+                onChange={(e) => setSize(e.target.value)}
+                placeholder="10.5"
+                className={inputClass}
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -77,7 +127,7 @@ export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:ring-1 focus:ring-amber-500/50"
+                className={selectClass}
               >
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
@@ -105,19 +155,54 @@ export function AddItemForm({ open, onClose, onSave }: AddItemFormProps) {
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs text-zinc-500 mb-1">Condition</label>
+              <select
+                value={condition}
+                onChange={(e) => setCondition(e.target.value)}
+                className={selectClass}
+              >
+                {CONDITIONS.map((c) => (
+                  <option key={c} value={c}>
+                    {c === 'open_box' ? 'Open Box' : c.charAt(0).toUpperCase() + c.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs text-zinc-500 mb-1">Location</label>
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Closet, Warehouse, Shipped"
+                className={inputClass}
+              />
+            </div>
+          </div>
+
           <div>
-            <label className="block text-xs text-zinc-500 mb-1">Condition</label>
-            <select
-              value={condition}
-              onChange={(e) => setCondition(e.target.value)}
-              className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:ring-1 focus:ring-amber-500/50"
-            >
-              {CONDITIONS.map((c) => (
-                <option key={c} value={c}>
-                  {c === 'open_box' ? 'Open Box' : c.charAt(0).toUpperCase() + c.slice(1)}
-                </option>
-              ))}
-            </select>
+            <label className="block text-xs text-zinc-500 mb-1">Image URL</label>
+            <input
+              type="url"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="https://..."
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs text-zinc-500 mb-1">Notes</label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Any additional details..."
+              rows={2}
+              className={inputClass + ' resize-none'}
+            />
           </div>
 
           <div className="flex gap-2 pt-2">
