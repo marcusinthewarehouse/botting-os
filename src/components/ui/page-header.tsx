@@ -43,8 +43,8 @@ export function PageHeader({
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors duration-150",
                 action.variant === "outline"
-                  ? "border border-border text-muted-foreground hover:bg-muted hover:text-foreground"
-                  : "bg-primary text-primary-foreground hover:bg-primary/90",
+                  ? "border border-border text-muted-foreground hover:bg-[#1e1e26] hover:text-foreground hover:border-[rgba(255,255,255,0.12)]"
+                  : "bg-primary text-primary-foreground hover:brightness-110 hover:shadow-[0_0_20px_rgba(0,212,170,0.2)]",
               )}
             >
               {action.icon}

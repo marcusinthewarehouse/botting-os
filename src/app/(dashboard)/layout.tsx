@@ -72,9 +72,12 @@ export default function DashboardLayout({
       <TooltipProvider delay={200}>
         <CryptoProvider>
           <Titlebar />
-          <div className="flex h-[calc(100vh-32px)]">
+          <div className="flex h-[calc(100vh-38px)]">
             <AppSidebar />
-            <main className="flex-1 overflow-auto bg-background p-6">
+            <main
+              className="flex-1 overflow-auto p-6"
+              style={{ background: "#18181f" }}
+            >
               <CommandPalette />
               {children}
             </main>

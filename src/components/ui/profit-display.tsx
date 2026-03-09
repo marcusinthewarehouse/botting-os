@@ -22,9 +22,7 @@ export function ProfitDisplay({ value, className }: ProfitDisplayProps) {
     <span
       className={cn(
         "font-mono tabular-nums",
-        value >= 0
-          ? "text-emerald-600 dark:text-emerald-400"
-          : "text-destructive",
+        value >= 0 ? "text-[#00d4aa]" : "text-[#ff4d6a]",
         className,
       )}
     >
