@@ -43,12 +43,5 @@
     "shortDescription": "Command center for botting operations",
     "longDescription": "BottingOS is a desktop command center for managing botting operations including inventory tracking, order management, profit calculation, drop calendars, and more."
   },
-  "plugins": {
-    "updater": {
-      "endpoints": [
-        "https://releases.bottingos.app/check/{{target}}/{{arch}}/{{current_version}}"
-      ],
-      "pubkey": ""
-    }
-  }
+  "plugins": {}
 }
