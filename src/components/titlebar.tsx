@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
-import { Minus, Square, X, Bell, Settings } from "lucide-react";
+import { Minus, Square, X } from "lucide-react";
 import { IS_TAURI } from "@/lib/db/client";
 import { NotificationCenter } from "@/components/notification-center";
 
