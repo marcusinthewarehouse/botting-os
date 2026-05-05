@@ -30,6 +30,8 @@ Each file is a multi-thousand-line technical investigation with code samples and
 - `claude-code-architecture.md` - how the planning/agent layer is structured.
 - `webhook-supabase-implementation.md` - cloud sync via Supabase, webhook ingestion, realtime updates.
 - `mobile-architecture.md` - desktop -> server -> mobile pipeline. Supabase Realtime + Expo Push, client-side encryption, pairing flow. Read before touching anything cross-device.
+- `cost-strategy.md` - infra cost analysis at every scale, six optimization levers, when to migrate off Supabase and where to. Read before any "let's switch backends" conversation.
+- `monetization-app-store.md` - Apple/Google Store fee structure and the Reader app / Multiplatform Service pattern BottingOS uses to keep 95-97% of revenue. Required reading before submitting either store app.
 - `pricing-apis-implementation.md` - StockX, GOAT, eBay, Pokemon TCG pricing integrations.
 - `marketplace-apis.md` - marketplace API survey and selection.
 - `aycd-bot-ecosystem.md` - the AYCD ecosystem BottingOS sits next to.
