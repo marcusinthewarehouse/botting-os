@@ -248,6 +248,26 @@ The following 5 features have been built with localStorage persistence (no backe
 - Is Discord user-token scraping legal / against TOS?
 - Does AYCD have a public or partner API?
 
+## 6.5 Privacy and Encryption Policy (non-negotiable)
+
+All cook-group / Discord message content, password vault entries, virtual card numbers, and any other user-private content is **end-to-end encrypted client-side before any cloud upload**. The server (Supabase, Cloudflare Worker, anything in between) stores ciphertext only. Plaintext that crosses the wire is limited to routing metadata: source, channel id, channel name, content hash (for dedup), tags, priority, timestamps.
+
+Why:
+- Cook group messages are paid third-party content. Storing them plaintext on our servers exposes both the user and BottingOS to civil-claim risk from cook group operators.
+- A breach of the cloud DB must not leak message bodies, vault entries, or card numbers.
+- "We never see your content" is a real differentiator versus every other cook-group monitor tool.
+
+How:
+- Reuse the existing `cryptoService` and vault flow already in v2 for message encryption.
+- Per-user master key generated on first desktop install, stored in OS keychain.
+- Mobile receives the master key via QR-based pairing (see `research/mobile-architecture.md` section 8) and stores it in SecureStore (iOS Keychain / Android Keystore).
+- Push notification bodies never contain message content - only `"New deal in <Channel>"`. Mobile decrypts the body on tap.
+- Server-side filtering (mute, priority routing) operates on plaintext metadata only. Content-aware filtering happens on the desktop pre-upload, with the result encoded into `tags` / `priority`.
+
+This policy applies to: Discord messages, WhatsApp messages, password vault, VCC numbers, any other user-private content. It does NOT apply to: public marketplace pricing data, AYCD inbox metadata, the user's own profit/expense numbers (those are in plaintext for indexing and reporting, gated by Supabase RLS on `user_id`).
+
+---
+
 ## 7. Explicit Constraints
 
 - MVP-first approach - ship easy features, iterate
