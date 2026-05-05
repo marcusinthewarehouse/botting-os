@@ -29,6 +29,7 @@ Each file is a multi-thousand-line technical investigation with code samples and
 - `desktop-app-architecture.md` - higher-level architectural choices for the desktop app.
 - `claude-code-architecture.md` - how the planning/agent layer is structured.
 - `webhook-supabase-implementation.md` - cloud sync via Supabase, webhook ingestion, realtime updates.
+- `mobile-architecture.md` - desktop -> server -> mobile pipeline. Supabase Realtime + Expo Push, client-side encryption, pairing flow. Read before touching anything cross-device.
 - `pricing-apis-implementation.md` - StockX, GOAT, eBay, Pokemon TCG pricing integrations.
 - `marketplace-apis.md` - marketplace API survey and selection.
 - `aycd-bot-ecosystem.md` - the AYCD ecosystem BottingOS sits next to.
@@ -42,6 +43,8 @@ Each file is a multi-thousand-line technical investigation with code samples and
 
 ---
 
-## Important note about repository state
+## Repository state
 
-The code currently on `main` in this repo is the *v1 frontend mockup*. The author's local working tree has progressed substantially beyond that (Tauri shell, Drizzle/Supabase wiring, Discord integration scaffolding, v2 UI redesign) but has not been pushed yet. These docs describe the *intended* full product, not the code currently visible in the repo. If you are about to build, ask the author for the latest local snapshot or treat this as a greenfield rebuild against the spec.
+`main` holds the v2 codebase: Tauri shell, Next.js 16 UI, Drizzle + SQLite local store, Supabase cloud sync wiring, Cloudflare Worker webhook proxy, Discord CDP integration scaffolding. The original v1 frontend mockup is preserved on the `legacy/v1-mockup` branch if you ever need it.
+
+These docs describe the *intended* full product. The code on `main` is the work-in-progress toward that spec - not every feature in `PRD.md` and `PHASES.md` is implemented yet. Check `PROGRESS.md` for what is actually shipped.
