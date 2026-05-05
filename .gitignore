@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# tauri
+src-tauri/target/
+src-tauri/gen/schemas/
+
+# editor / OS / agent local state
+.DS_Store
+.playwright-mcp/
+.claude/skills/algorithmic-art/
+.claude/orchestration-bottingos/
+docs/orchestration/
+

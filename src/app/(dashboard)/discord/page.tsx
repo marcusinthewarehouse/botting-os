@@ -225,6 +225,11 @@ export default function DiscordPage() {
             /* ignore */
           }
         }
+        try {
+          await DiscordService.stopCapture();
+        } catch {
+          /* no capture running - ok */
+        }
         await DiscordService.startCapture(channelIds);
       }
     } catch (e) {
