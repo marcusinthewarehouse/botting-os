@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BottingOS
 
-## Getting Started
+Cross-platform desktop operations dashboard for sneaker / retail / TCG botters. Manages accounts, proxies, orders, profit tracking, virtual cards, and Discord cook group messages in one app.
 
-First, run the development server:
+> **Status:** v2 in active development. Tauri shell, Next.js 16 UI, Drizzle + SQLite local store, Supabase cloud sync, Discord CDP capture in progress. The previous `main` (v1 web mockup) is preserved on the `legacy/v1-mockup` branch.
+
+## Read this before building
+
+The full design - PRD, phased plan, deep technical research on every hard subsystem (Discord local capture, Tauri/Next/Drizzle, marketplace and pricing APIs, AYCD ecosystem, Supabase sync, UI/UX), and 42 sharded task files - lives in [`docs/`](./docs/README.md).
+
+If you are an AI coding assistant (Codex, Claude, Cursor): start with [`docs/README.md`](./docs/README.md), then [`docs/PRD.md`](./docs/PRD.md), then dive into [`docs/research/`](./docs/research/) for whichever subsystem you are touching.
+
+## Stack
+
+- **Desktop shell:** Tauri 2 (Rust). See `src-tauri/`.
+- **UI:** Next.js 16 (static export), React 19, TypeScript, Tailwind. See `src/`.
+- **Local store:** Drizzle ORM + SQLite. Repositories in `src/lib/db/repositories/`.
+- **Cloud sync:** Supabase (Postgres + Realtime + Edge Functions). Migrations in `supabase/`.
+- **Webhook ingestion:** Cloudflare Worker proxy. See `workers/webhook-proxy/`.
+- **Tests:** Vitest.
+
+## Getting started
 
 ```bash
+# install
+npm install
+
+# web-only dev (Next.js on http://localhost:3000)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# full desktop dev (Next.js + Rust)
+npx tauri dev
+
+# type check
+npx tsc --noEmit
+
+# unit tests
+npx vitest run
+
+# production build
+npm run build && npx tauri build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Workers (webhook proxy) live in `workers/webhook-proxy/` with their own `package.json`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Repo layout
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/                  Next.js app (React + Tailwind)
+  app/                routes (App Router, static export)
+  components/         UI primitives
+  lib/db/             Drizzle schema + repositories
+  services/           cross-cutting domain services (Discord, vault, pricing)
+src-tauri/            Rust desktop shell
+  src/                Tauri commands, CDP client, system integration
+supabase/migrations/  cloud schema + RLS policies
+workers/webhook-proxy/  Cloudflare Worker that ingests Discord/marketplace webhooks
+public/               static assets
+docs/                 PRD, phased plan, research, sharded tasks (READ FIRST)
+```
 
-## Learn More
+## Project rules (non-negotiable)
 
-To learn more about Next.js, take a look at the following resources:
+- **No em dashes** anywhere - use hyphens or " - ".
+- **Dark theme only.** Background `#09090B` (zinc-950), surfaces zinc-900/800, accent amber-500.
+- **Numbers/prices** always `font-mono tabular-nums`.
+- **Loading states** - skeleton components, never spinners.
+- **DB access** always through repositories in `src/lib/db/repositories/` - never query Drizzle directly from a page component.
+- **Vault data** - always encrypt before write, decrypt on read via `cryptoService`.
+- **Tauri invoke** - always lazy import: `const { invoke } = await import('@tauri-apps/api/core')`.
+- **No Prisma. No Server Components. No API Routes.** Static export only.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Private project. Contact the author before redistributing.
