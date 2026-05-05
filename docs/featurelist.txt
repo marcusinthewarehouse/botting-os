@@ -1,0 +1,105 @@
+⏺ Green - Easy (mostly UI + localStorage/database work, minimal external  
+  APIs)                                                                   
+                                                     
+  1. Flip Profit Calculator - Enter item + purchase price, see net profit 
+  after fees on eBay/StockX/GOAT side by side. Pure math, no APIs needed. 
+  (Built)                                                                 
+  2. Basic Profit & Expense Tracker - Log purchases and sales manually,
+  see P&L per item and running totals, CSV export. (Built)
+  3. Email & Account Manager - Bulk import Hide My Email addresses,
+  organize by iCloud source, tag by retailer, filter both directions.
+  (Built)
+  4. Password Vault - Encrypted credential storage with master password,
+  copy buttons, auto-lock, panic hide. (Built)
+  5. VCC Tracker - Track virtual credit cards by provider/last 4, link to
+  accounts and orders, usage history. (Built)
+  6. Automation Jig Tool - Auto-generate address/name variations from a
+  base address, split CSVs, format task files for bots. Text manipulation,
+   no APIs.
+  7. Drop Calendar (Manual) - Curated list of upcoming releases (sneakers,
+   Pokemon, consoles), push notifications. Manual data entry or
+  VA-curated, no scrapers.
+  8. Auto-Cleanup Tools - After emails are parsed, delete or archive old
+  order confirmation emails. Basic email filtering rules.
+  9. Cloud Sync & Encrypted Backup - Move from localStorage to a real
+  database, sync across devices, encrypted backups.
+
+  Yellow - Medium (requires external APIs, email parsing, or real-time
+  data)
+
+  10. Order Tracker - Forward order confirmation emails into the app via
+  IMAP/webhook, auto-extract order number, tracking, item, address, card
+  used, shipping status.
+  11. Advanced Profit Tracker - Connect to bank/card APIs (Plaid) to
+  auto-log expenses, connect to marketplaces to auto-log sales with fee
+  deduction.
+  12. Inventory Manager - Track unsold items in hand, pull current resale
+  values from StockX/GOAT APIs, flag items sitting too long or dropping in
+   price.
+  13. Discord Alert Integration - User installs a companion bot to their
+  cook group channels, app consolidates alerts into one clean feed with
+  filters and quiet hours.
+  14. Analytics Dashboard - Charts for profit vs spend over time, success
+  rate by site/bot/proxy, ROI trends, best-performing drop days.
+  Visualization layer on top of tracker data.
+  15. VCC Manager Advanced - Live integration with Privacy.com API to
+  generate virtual cards on the fly, auto-assign to profiles/tasks, track
+  balances in real time.
+  16. 2FA / Token Manager - Store TOTP seeds and generate live 2FA codes
+  in-app (like Authy), store browser cookies/tokens for reuse across
+  sessions.
+  17. Marketplace Auto-Sync - OAuth with eBay/StockX/GOAT to auto-pull
+  sales data, fees, and payout info into the profit tracker.
+  18. Bot Integration via Webhooks - Each user gets a personal webhook
+  URL, paste it into bot config (Valor/Cyber/Kodai/NSB), app parses
+  checkout logs into structured data.
+
+  Red - Hard (complex backend, security challenges, or business
+  development needed)
+
+  19. Account Health Checker - Bulk login tester for retailer accounts
+  (Nike, Walmart, Target), detect bans/flags, handle captcha and 2FA
+  challenges during checks.
+  20. Proxy Manager Advanced - Test proxy speed/latency against real
+  sites, detect bans, assign proxies to bots/accounts, auto-rotate on
+  failure.
+  21. AYCD API Integration - Sync generated accounts from AYCD tools
+  automatically. Requires AYCD to provide API access or partnership.
+  22. Multi-User / Team Support - Shared dashboards, role-based
+  permissions (owner/admin/staff), per-feature access gates, audit trails.
+  23. Collaboration Tools - Team notifications, shared notes, reporting
+  across members, assignment of emails/proxies/tasks to team members.
+  24. Cook Group Management Tool - B2B dashboard overlay for Discord cook
+  groups: content management, member analytics, success tracking, resource
+   hub.
+  25. White-Label Option - Cook groups get custom branding (logo, colors)
+  on their version of the dashboard.
+
+  Fire - Very Hard (arms race with retailers, heavy infrastructure,
+  constant maintenance)
+
+  26. Live Monitors - Automated product monitors for Shopify, Nike SNKRS,
+  Target, Walmart. Requires proxy pools, anti-bot bypass, session
+  management, sub-5s latency.
+  27. Account Activity Farming - Simulate realistic browsing history on
+  retailer accounts to build trust and avoid bans. Browser automation at
+  scale.
+  28. Bot Direct Integrations - Partner with bot vendors (Cyber, Kodai,
+  Valor) for OAuth/API access to structured checkout data. Requires
+  biz-dev with each vendor.
+  29. Success Tracker & Leaderboard - Members submit checkouts, auto-pull
+  from bot webhooks, aggregate stats ("this group hit 500 PS5s"),
+  leaderboards.
+  30. Resource Hub - Searchable library of cook group guides, bot configs,
+   proxy tutorials. Content management system for group admins.
+  31. Group Buys / Marketplace - Dedicated tab for cook group discounts on
+   proxies, servers, cards. Payment processing between members and group.
+
+  Platform (separate workstreams, not feature difficulty)
+
+  32. Mobile App - React Native + Expo, offline-first SQLite, barcode
+  scanning for tracking, push notifications, widgets.
+  33. Desktop App - Tauri wrapper around the web app, optimized for bulk
+  operations, grid views, team admin.
+  34. Cross-Platform Sync - SQLite on mobile, PostgreSQL on server,
+  conflict resolution, background sync.

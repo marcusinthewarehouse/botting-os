@@ -110,8 +110,11 @@ Status is reported in PR checks.
 
 ## Documentation
 
-- [MVP PRD](./BOTTING_OS_MVP_PRD.md) - Features and requirements
-- [Implementation Plan](./IMPLEMENTATION_PLAN.md) - Architecture, phases, tasks
+- **[Full project context](./docs/README.md)** - PRD, phased plan, 14 research deep-dives, 42 sharded task files. **Read this first if you are picking up the project.**
+- [MVP PRD (v1)](./BOTTING_OS_MVP_PRD.md) - early MVP features and requirements
+- [Implementation Plan (v1)](./IMPLEMENTATION_PLAN.md) - early architecture, phases, tasks
+
+> Note: the code on `main` is the v1 frontend mockup. The author's local working tree has progressed beyond this (Tauri shell, Discord CDP integration, v2 UI). See [`docs/README.md`](./docs/README.md) for the up-to-date spec - and ask the author for the latest local snapshot before building.
 
 ## Team
 
